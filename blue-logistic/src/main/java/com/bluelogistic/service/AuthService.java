@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -42,9 +43,9 @@ public class AuthService implements UserDetailsService {
     }
     
     @Transactional
-    public void changePassword(String userId, String currentPassword, String newPassword) {
+    public void changePassword(UUID userId, String currentPassword, String newPassword) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId.toString()));
         
         if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
             throw new BusinessException("Current password is incorrect");
@@ -56,8 +57,8 @@ public class AuthService implements UserDetailsService {
         log.info("Password changed successfully for user: {}", user.getEmail());
     }
     
-    public User getCurrentUser(String userId) {
+    public User getCurrentUser(UUID userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId.toString()));
     }
 }

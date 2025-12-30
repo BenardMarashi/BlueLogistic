@@ -21,6 +21,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/packages")
 @RequiredArgsConstructor
@@ -45,7 +47,7 @@ public class PackageController {
     public ResponseEntity<Page<PackageResponse>> getPackages(
             @AuthenticationPrincipal User user,
             @RequestParam(required = false) PackageStatus status,
-            @RequestParam(required = false) String sellerId,
+            @RequestParam(required = false) UUID sellerId,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
@@ -72,7 +74,7 @@ public class PackageController {
     @GetMapping("/{id}")
     public ResponseEntity<PackageResponse> getPackage(
             @AuthenticationPrincipal User user,
-            @PathVariable String id) {
+            @PathVariable UUID id) {
         Package pkg = packageService.getPackageById(id);
         
         if (user.getRole() == Role.SELLER) {
@@ -88,7 +90,7 @@ public class PackageController {
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PackageResponse> updateStatus(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Valid @RequestBody UpdateStatusRequest request) {
         Package updatedPackage = packageService.updatePackageStatus(id, request.status());
         return ResponseEntity.ok(packageMapper.toResponse(updatedPackage));
@@ -97,7 +99,7 @@ public class PackageController {
     @PatchMapping("/{id}/tracking")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PackageResponse> updateTracking(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Valid @RequestBody UpdateTrackingRequest request) {
         Package updatedPackage = packageService.updateTrackingNumber(id, request.trackingNumber());
         return ResponseEntity.ok(packageMapper.toResponse(updatedPackage));
@@ -105,7 +107,7 @@ public class PackageController {
     
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deletePackage(@PathVariable String id) {
+    public ResponseEntity<Void> deletePackage(@PathVariable UUID id) {
         packageService.deletePackage(id);
         return ResponseEntity.noContent().build();
     }

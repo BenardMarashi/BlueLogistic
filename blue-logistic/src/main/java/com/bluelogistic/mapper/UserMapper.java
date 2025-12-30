@@ -4,6 +4,8 @@ import com.bluelogistic.dto.UserResponse;
 import com.bluelogistic.entity.User;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class UserMapper {
     

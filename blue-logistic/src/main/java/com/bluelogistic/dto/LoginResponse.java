@@ -1,8 +1,10 @@
 package com.bluelogistic.dto;
 
+import java.util.UUID;
+
 public record LoginResponse(
     String token,
-    String userId,
+    UUID userId,
     String email,
     String name,
     String role

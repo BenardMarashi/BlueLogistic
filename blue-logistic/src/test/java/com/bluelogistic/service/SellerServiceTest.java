@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,18 +46,23 @@ class SellerServiceTest {
 
     private User testUser;
     private Seller testSeller;
+    private UUID testUserId;
+    private UUID testSellerId;
 
     @BeforeEach
     void setUp() {
+        testUserId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+        testSellerId = UUID.fromString("660e8400-e29b-41d4-a716-446655440001");
+        
         testUser = new User();
-        testUser.setId("user-123");
+        testUser.setId(testUserId);
         testUser.setEmail("seller@example.com");
         testUser.setPasswordHash("hashedPassword");
         testUser.setName("Test Seller");
         testUser.setRole(Role.SELLER);
 
         testSeller = new Seller();
-        testSeller.setId("seller-123");
+        testSeller.setId(testSellerId);
         testSeller.setUser(testUser);
         testSeller.setCompanyName("Test Company");
         testSeller.setActive(true);
@@ -69,12 +75,12 @@ class SellerServiceTest {
         when(passwordEncoder.encode("password123")).thenReturn("hashedPassword");
         when(userRepository.save(any(User.class))).thenAnswer(inv -> {
             User user = inv.getArgument(0);
-            user.setId("new-user-id");
+            user.setId(UUID.randomUUID());
             return user;
         });
         when(sellerRepository.save(any(Seller.class))).thenAnswer(inv -> {
             Seller seller = inv.getArgument(0);
-            seller.setId("new-seller-id");
+            seller.setId(UUID.randomUUID());
             return seller;
         });
 
@@ -102,37 +108,38 @@ class SellerServiceTest {
     @Test
     void getSellerById_ExistingSeller_ReturnsSeller() {
         // Arrange
-        when(sellerRepository.findByIdWithUser("seller-123")).thenReturn(Optional.of(testSeller));
+        when(sellerRepository.findByIdWithUser(testSellerId)).thenReturn(Optional.of(testSeller));
 
         // Act
-        Seller result = sellerService.getSellerById("seller-123");
+        Seller result = sellerService.getSellerById(testSellerId);
 
         // Assert
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo("seller-123");
+        assertThat(result.getId()).isEqualTo(testSellerId);
     }
 
     @Test
     void getSellerById_NonExistingSeller_ThrowsResourceNotFoundException() {
         // Arrange
-        when(sellerRepository.findByIdWithUser("non-existing")).thenReturn(Optional.empty());
+        UUID nonExistingId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+        when(sellerRepository.findByIdWithUser(nonExistingId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThatThrownBy(() -> sellerService.getSellerById("non-existing"))
+        assertThatThrownBy(() -> sellerService.getSellerById(nonExistingId))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void getSellerByUserId_ExistingUser_ReturnsSeller() {
         // Arrange
-        when(sellerRepository.findByUserId("user-123")).thenReturn(Optional.of(testSeller));
+        when(sellerRepository.findByUserId(testUserId)).thenReturn(Optional.of(testSeller));
 
         // Act
-        Seller result = sellerService.getSellerByUserId("user-123");
+        Seller result = sellerService.getSellerByUserId(testUserId);
 
         // Assert
         assertThat(result).isNotNull();
-        assertThat(result.getUser().getId()).isEqualTo("user-123");
+        assertThat(result.getUser().getId()).isEqualTo(testUserId);
     }
 
     @Test
@@ -147,17 +154,17 @@ class SellerServiceTest {
 
         // Assert
         assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getContent().get(0).getId()).isEqualTo("seller-123");
+        assertThat(result.getContent().get(0).getId()).isEqualTo(testSellerId);
     }
 
     @Test
     void updateSellerStatus_ValidSeller_UpdatesStatus() {
         // Arrange
-        when(sellerRepository.findById("seller-123")).thenReturn(Optional.of(testSeller));
+        when(sellerRepository.findById(testSellerId)).thenReturn(Optional.of(testSeller));
         when(sellerRepository.save(any(Seller.class))).thenReturn(testSeller);
 
         // Act
-        Seller result = sellerService.updateSellerStatus("seller-123", false);
+        Seller result = sellerService.updateSellerStatus(testSellerId, false);
 
         // Assert
         assertThat(result).isNotNull();

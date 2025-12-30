@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -37,16 +39,20 @@ public class AuthController {
     }
     
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal User user) {
-        User currentUser = authService.getCurrentUser(user.getId());
+    public ResponseEntity<UserResponse> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7); // Remove "Bearer " prefix
+        UUID userId = jwtService.extractUserId(token);
+        User currentUser = authService.getCurrentUser(userId);
         return ResponseEntity.ok(userMapper.toResponse(currentUser));
     }
     
     @PatchMapping("/password")
     public ResponseEntity<Void> changePassword(
-            @AuthenticationPrincipal User user,
+            @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody ChangePasswordRequest request) {
-        authService.changePassword(user.getId(), request.currentPassword(), request.newPassword());
+        String token = authHeader.substring(7); // Remove "Bearer " prefix
+        UUID userId = jwtService.extractUserId(token);
+        authService.changePassword(userId, request.currentPassword(), request.newPassword());
         return ResponseEntity.noContent().build();
     }
 }

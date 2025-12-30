@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -77,5 +78,10 @@ public class JwtService {
     private SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+    
+    public UUID extractUserId(String token) {
+        String userIdString = extractClaim(token, claims -> claims.get("userId", String.class));
+        return UUID.fromString(userIdString);
     }
 }

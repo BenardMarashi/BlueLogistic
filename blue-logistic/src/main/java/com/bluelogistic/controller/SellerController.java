@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/sellers")
 @PreAuthorize("hasRole('ADMIN')")
@@ -48,14 +50,14 @@ public class SellerController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<SellerResponse> getSeller(@PathVariable String id) {
+    public ResponseEntity<SellerResponse> getSeller(@PathVariable UUID id) {
         Seller seller = sellerService.getSellerById(id);
         return ResponseEntity.ok(sellerMapper.toResponse(seller));
     }
     
     @PatchMapping("/{id}/status")
     public ResponseEntity<SellerResponse> updateStatus(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Valid @RequestBody UpdateSellerStatusRequest request) {
         Seller updatedSeller = sellerService.updateSellerStatus(id, request.isActive());
         return ResponseEntity.ok(sellerMapper.toResponse(updatedSeller));
@@ -63,7 +65,7 @@ public class SellerController {
     
     @GetMapping("/{id}/packages")
     public ResponseEntity<Page<PackageResponse>> getSellerPackages(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @RequestParam(required = false) PackageStatus status,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,

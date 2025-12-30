@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -35,11 +36,13 @@ class AuthServiceTest {
     private AuthService authService;
 
     private User testUser;
+    private UUID testUserId;
 
     @BeforeEach
     void setUp() {
+        testUserId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
         testUser = new User();
-        testUser.setId("user-123");
+        testUser.setId(testUserId);
         testUser.setEmail("test@example.com");
         testUser.setPasswordHash("hashedPassword");
         testUser.setName("Test User");
@@ -87,36 +90,37 @@ class AuthServiceTest {
     @Test
     void getCurrentUser_ExistingUser_ReturnsUser() {
         // Arrange
-        when(userRepository.findById("user-123")).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(testUserId)).thenReturn(Optional.of(testUser));
 
         // Act
-        User result = authService.getCurrentUser("user-123");
+        User result = authService.getCurrentUser(testUserId);
 
         // Assert
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo("user-123");
+        assertThat(result.getId()).isEqualTo(testUserId);
     }
 
     @Test
     void getCurrentUser_NonExistingUser_ThrowsResourceNotFoundException() {
         // Arrange
-        when(userRepository.findById("non-existing")).thenReturn(Optional.empty());
+        UUID nonExistingId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+        when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThatThrownBy(() -> authService.getCurrentUser("non-existing"))
+        assertThatThrownBy(() -> authService.getCurrentUser(nonExistingId))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void changePassword_ValidCurrentPassword_UpdatesPassword() {
         // Arrange
-        when(userRepository.findById("user-123")).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(testUserId)).thenReturn(Optional.of(testUser));
         when(passwordEncoder.matches("currentPassword", "hashedPassword")).thenReturn(true);
         when(passwordEncoder.encode("newPassword")).thenReturn("newHashedPassword");
         when(userRepository.save(any(User.class))).thenReturn(testUser);
 
         // Act
-        authService.changePassword("user-123", "currentPassword", "newPassword");
+        authService.changePassword(testUserId, "currentPassword", "newPassword");
 
         // Assert
         verify(userRepository).save(any(User.class));
@@ -126,11 +130,11 @@ class AuthServiceTest {
     @Test
     void changePassword_InvalidCurrentPassword_ThrowsBusinessException() {
         // Arrange
-        when(userRepository.findById("user-123")).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(testUserId)).thenReturn(Optional.of(testUser));
         when(passwordEncoder.matches("wrongPassword", "hashedPassword")).thenReturn(false);
 
         // Act & Assert
-        assertThatThrownBy(() -> authService.changePassword("user-123", "wrongPassword", "newPassword"))
+        assertThatThrownBy(() -> authService.changePassword(testUserId, "wrongPassword", "newPassword"))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("Current password is incorrect");
     }

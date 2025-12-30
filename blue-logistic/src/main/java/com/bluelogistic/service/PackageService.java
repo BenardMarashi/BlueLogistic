@@ -27,9 +27,9 @@ public class PackageService {
     private final SellerRepository sellerRepository;
     
     @Transactional
-    public Package createPackage(String sellerId, Package packageData) {
+    public Package createPackage(UUID sellerId, Package packageData) {
         Seller seller = sellerRepository.findById(sellerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Seller", "id", sellerId));
+                .orElseThrow(() -> new ResourceNotFoundException("Seller", "id", sellerId.toString()));
         
         if (!seller.isActive()) {
             throw new BusinessException("Seller is not active");
@@ -44,16 +44,16 @@ public class PackageService {
         return savedPackage;
     }
     
-    public Package getPackageById(String packageId) {
+    public Package getPackageById(UUID packageId) {
         return packageRepository.findByIdWithSeller(packageId)
-                .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId));
+                .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId.toString()));
     }
     
     public Page<Package> getPackages(Pageable pageable) {
         return packageRepository.findAll(pageable);
     }
     
-    public Page<Package> getPackagesBySeller(String sellerId, Pageable pageable) {
+    public Page<Package> getPackagesBySeller(UUID sellerId, Pageable pageable) {
         return packageRepository.findBySellerId(sellerId, pageable);
     }
     
@@ -62,9 +62,9 @@ public class PackageService {
     }
     
     @Transactional
-    public Package updatePackageStatus(String packageId, PackageStatus newStatus) {
+    public Package updatePackageStatus(UUID packageId, PackageStatus newStatus) {
         Package pkg = packageRepository.findById(packageId)
-                .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId));
+                .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId.toString()));
         
         validateStatusTransition(pkg.getStatus(), newStatus);
         
@@ -76,9 +76,9 @@ public class PackageService {
     }
     
     @Transactional
-    public Package updateTrackingNumber(String packageId, String trackingNumber) {
+    public Package updateTrackingNumber(UUID packageId, String trackingNumber) {
         Package pkg = packageRepository.findById(packageId)
-                .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId));
+                .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId.toString()));
         
         if (pkg.getStatus() != PackageStatus.IN_STORAGE && pkg.getStatus() != PackageStatus.DISPATCHED) {
             throw new BusinessException("Tracking number can only be added to packages in IN_STORAGE or DISPATCHED status");
@@ -100,9 +100,9 @@ public class PackageService {
     }
     
     @Transactional
-    public void deletePackage(String packageId) {
+    public void deletePackage(UUID packageId) {
         Package pkg = packageRepository.findById(packageId)
-                .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId));
+                .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId.toString()));
         
         if (pkg.getStatus() != PackageStatus.CREATED) {
             throw new BusinessException("Only packages with CREATED status can be deleted");
@@ -112,7 +112,7 @@ public class PackageService {
         log.info("Package {} deleted successfully", packageId);
     }
     
-    public Page<Package> getPackagesFiltered(PackageStatus status, String sellerId, String search, Pageable pageable) {
+    public Page<Package> getPackagesFiltered(PackageStatus status, UUID sellerId, String search, Pageable pageable) {
         if (search != null && !search.isBlank()) {
             return packageRepository.searchByCustomerNameOrTracking(search.trim(), pageable);
         }
@@ -128,7 +128,7 @@ public class PackageService {
         return packageRepository.findAll(pageable);
     }
 
-    public Page<Package> getPackagesBySellerFiltered(String sellerId, PackageStatus status, String search, Pageable pageable) {
+    public Page<Package> getPackagesBySellerFiltered(UUID sellerId, PackageStatus status, String search, Pageable pageable) {
         if (search != null && !search.isBlank()) {
             return packageRepository.findBySellerIdAndCustomerNameContaining(sellerId, search.trim(), pageable);
         }

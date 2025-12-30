@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,23 +46,30 @@ class PackageServiceTest {
     private User testUser;
     private Seller testSeller;
     private Package testPackage;
+    private UUID testUserId;
+    private UUID testSellerId;
+    private UUID testPackageId;
 
     @BeforeEach
     void setUp() {
+        testUserId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+        testSellerId = UUID.fromString("660e8400-e29b-41d4-a716-446655440001");
+        testPackageId = UUID.fromString("770e8400-e29b-41d4-a716-446655440002");
+        
         testUser = new User();
-        testUser.setId("user-123");
+        testUser.setId(testUserId);
         testUser.setEmail("seller@example.com");
         testUser.setName("Test Seller");
         testUser.setRole(Role.SELLER);
 
         testSeller = new Seller();
-        testSeller.setId("seller-123");
+        testSeller.setId(testSellerId);
         testSeller.setUser(testUser);
         testSeller.setCompanyName("Test Company");
         testSeller.setActive(true);
 
         testPackage = new Package();
-        testPackage.setId("package-123");
+        testPackage.setId(testPackageId);
         testPackage.setSeller(testSeller);
         testPackage.setCustomerName("John Doe");
         testPackage.setCustomerEmail("john@example.com");
@@ -75,10 +83,10 @@ class PackageServiceTest {
     @Test
     void createPackage_ValidData_ReturnsPackage() {
         // Arrange
-        when(sellerRepository.findById("seller-123")).thenReturn(Optional.of(testSeller));
+        when(sellerRepository.findById(testSellerId)).thenReturn(Optional.of(testSeller));
         when(packageRepository.save(any(Package.class))).thenAnswer(inv -> {
             Package pkg = inv.getArgument(0);
-            pkg.setId("new-package-id");
+            pkg.setId(UUID.randomUUID());
             return pkg;
         });
 
@@ -88,11 +96,11 @@ class PackageServiceTest {
         newPackage.setWeight(new BigDecimal("1.5"));
 
         // Act
-        Package result = packageService.createPackage("seller-123", newPackage);
+        Package result = packageService.createPackage(testSellerId, newPackage);
 
         // Assert
         assertThat(result).isNotNull();
-        assertThat(result.getSeller().getId()).isEqualTo("seller-123");
+        assertThat(result.getSeller().getId()).isEqualTo(testSellerId);
         assertThat(result.getStatus()).isEqualTo(PackageStatus.CREATED);
         verify(packageRepository).save(any(Package.class));
     }
@@ -101,12 +109,12 @@ class PackageServiceTest {
     void createPackage_InactiveSeller_ThrowsBusinessException() {
         // Arrange
         testSeller.setActive(false);
-        when(sellerRepository.findById("seller-123")).thenReturn(Optional.of(testSeller));
+        when(sellerRepository.findById(testSellerId)).thenReturn(Optional.of(testSeller));
 
         Package newPackage = new Package();
 
         // Act & Assert
-        assertThatThrownBy(() -> packageService.createPackage("seller-123", newPackage))
+        assertThatThrownBy(() -> packageService.createPackage(testSellerId, newPackage))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("Seller is not active");
     }
@@ -114,33 +122,35 @@ class PackageServiceTest {
     @Test
     void createPackage_NonExistingSeller_ThrowsResourceNotFoundException() {
         // Arrange
-        when(sellerRepository.findById("non-existing")).thenReturn(Optional.empty());
+        UUID nonExistingId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+        when(sellerRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThatThrownBy(() -> packageService.createPackage("non-existing", new Package()))
+        assertThatThrownBy(() -> packageService.createPackage(nonExistingId, new Package()))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void getPackageById_ExistingPackage_ReturnsPackage() {
         // Arrange
-        when(packageRepository.findByIdWithSeller("package-123")).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findByIdWithSeller(testPackageId)).thenReturn(Optional.of(testPackage));
 
         // Act
-        Package result = packageService.getPackageById("package-123");
+        Package result = packageService.getPackageById(testPackageId);
 
         // Assert
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo("package-123");
+        assertThat(result.getId()).isEqualTo(testPackageId);
     }
 
     @Test
     void getPackageById_NonExistingPackage_ThrowsResourceNotFoundException() {
         // Arrange
-        when(packageRepository.findByIdWithSeller("non-existing")).thenReturn(Optional.empty());
+        UUID nonExistingId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+        when(packageRepository.findByIdWithSeller(nonExistingId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThatThrownBy(() -> packageService.getPackageById("non-existing"))
+        assertThatThrownBy(() -> packageService.getPackageById(nonExistingId))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -148,11 +158,11 @@ class PackageServiceTest {
     void updatePackageStatus_ValidTransition_CreatedToInStorage_UpdatesStatus() {
         // Arrange
         testPackage.setStatus(PackageStatus.CREATED);
-        when(packageRepository.findById("package-123")).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
         when(packageRepository.save(any(Package.class))).thenReturn(testPackage);
 
         // Act
-        Package result = packageService.updatePackageStatus("package-123", PackageStatus.IN_STORAGE);
+        Package result = packageService.updatePackageStatus(testPackageId, PackageStatus.IN_STORAGE);
 
         // Assert
         assertThat(result.getStatus()).isEqualTo(PackageStatus.IN_STORAGE);
@@ -163,11 +173,11 @@ class PackageServiceTest {
     void updatePackageStatus_ValidTransition_InStorageToDispatched_UpdatesStatus() {
         // Arrange
         testPackage.setStatus(PackageStatus.IN_STORAGE);
-        when(packageRepository.findById("package-123")).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
         when(packageRepository.save(any(Package.class))).thenReturn(testPackage);
 
         // Act
-        Package result = packageService.updatePackageStatus("package-123", PackageStatus.DISPATCHED);
+        Package result = packageService.updatePackageStatus(testPackageId, PackageStatus.DISPATCHED);
 
         // Assert
         assertThat(result.getStatus()).isEqualTo(PackageStatus.DISPATCHED);
@@ -177,10 +187,10 @@ class PackageServiceTest {
     void updatePackageStatus_InvalidTransition_CreatedToDispatched_ThrowsBusinessException() {
         // Arrange
         testPackage.setStatus(PackageStatus.CREATED);
-        when(packageRepository.findById("package-123")).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
 
         // Act & Assert
-        assertThatThrownBy(() -> packageService.updatePackageStatus("package-123", PackageStatus.DISPATCHED))
+        assertThatThrownBy(() -> packageService.updatePackageStatus(testPackageId, PackageStatus.DISPATCHED))
                 .isInstanceOf(InvalidStatusTransitionException.class)
                 .hasMessageContaining("Invalid status transition");
     }
@@ -189,10 +199,10 @@ class PackageServiceTest {
     void updatePackageStatus_InvalidTransition_DispatchedToAny_ThrowsBusinessException() {
         // Arrange
         testPackage.setStatus(PackageStatus.DISPATCHED);
-        when(packageRepository.findById("package-123")).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
 
         // Act & Assert
-        assertThatThrownBy(() -> packageService.updatePackageStatus("package-123", PackageStatus.IN_STORAGE))
+        assertThatThrownBy(() -> packageService.updatePackageStatus(testPackageId, PackageStatus.IN_STORAGE))
                 .isInstanceOf(InvalidStatusTransitionException.class)
                 .hasMessageContaining("Invalid status transition");
     }
@@ -201,12 +211,12 @@ class PackageServiceTest {
     void updateTrackingNumber_ValidPackage_UpdatesTracking() {
         // Arrange
         testPackage.setStatus(PackageStatus.IN_STORAGE);
-        when(packageRepository.findById("package-123")).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
         when(packageRepository.existsByTrackingNumber("TRACK123")).thenReturn(false);
         when(packageRepository.save(any(Package.class))).thenReturn(testPackage);
 
         // Act
-        Package result = packageService.updateTrackingNumber("package-123", "TRACK123");
+        Package result = packageService.updateTrackingNumber(testPackageId, "TRACK123");
 
         // Assert
         assertThat(result.getTrackingNumber()).isEqualTo("TRACK123");
@@ -218,11 +228,11 @@ class PackageServiceTest {
     void updateTrackingNumber_DuplicateTracking_ThrowsBusinessException() {
         // Arrange
         testPackage.setStatus(PackageStatus.IN_STORAGE);
-        when(packageRepository.findById("package-123")).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
         when(packageRepository.existsByTrackingNumber("DUPLICATE")).thenReturn(true);
 
         // Act & Assert
-        assertThatThrownBy(() -> packageService.updateTrackingNumber("package-123", "DUPLICATE"))
+        assertThatThrownBy(() -> packageService.updateTrackingNumber(testPackageId, "DUPLICATE"))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("Tracking number already exists");
     }
@@ -231,10 +241,10 @@ class PackageServiceTest {
     void updateTrackingNumber_CreatedStatus_ThrowsBusinessException() {
         // Arrange
         testPackage.setStatus(PackageStatus.CREATED);
-        when(packageRepository.findById("package-123")).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
 
         // Act & Assert
-        assertThatThrownBy(() -> packageService.updateTrackingNumber("package-123", "TRACK123"))
+        assertThatThrownBy(() -> packageService.updateTrackingNumber(testPackageId, "TRACK123"))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("Tracking number can only be added");
     }
@@ -243,24 +253,24 @@ class PackageServiceTest {
     void deletePackage_CreatedStatus_DeletesPackage() {
         // Arrange
         testPackage.setStatus(PackageStatus.CREATED);
-        when(packageRepository.findById("package-123")).thenReturn(Optional.of(testPackage));
-        doNothing().when(packageRepository).deleteById("package-123");
+        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
+        doNothing().when(packageRepository).deleteById(testPackageId);
 
         // Act
-        packageService.deletePackage("package-123");
+        packageService.deletePackage(testPackageId);
 
         // Assert
-        verify(packageRepository).deleteById("package-123");
+        verify(packageRepository).deleteById(testPackageId);
     }
 
     @Test
     void deletePackage_NonCreatedStatus_ThrowsBusinessException() {
         // Arrange
         testPackage.setStatus(PackageStatus.IN_STORAGE);
-        when(packageRepository.findById("package-123")).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
 
         // Act & Assert
-        assertThatThrownBy(() -> packageService.deletePackage("package-123"))
+        assertThatThrownBy(() -> packageService.deletePackage(testPackageId))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("Only packages with CREATED status can be deleted");
     }
@@ -284,14 +294,14 @@ class PackageServiceTest {
         // Arrange
         Pageable pageable = PageRequest.of(0, 10);
         Page<Package> expectedPage = new PageImpl<>(List.of(testPackage));
-        when(packageRepository.findBySellerId("seller-123", pageable)).thenReturn(expectedPage);
+        when(packageRepository.findBySellerId(testSellerId, pageable)).thenReturn(expectedPage);
 
         // Act
-        Page<Package> result = packageService.getPackagesBySeller("seller-123", pageable);
+        Page<Package> result = packageService.getPackagesBySeller(testSellerId, pageable);
 
         // Assert
         assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getContent().get(0).getSeller().getId()).isEqualTo("seller-123");
+        assertThat(result.getContent().get(0).getSeller().getId()).isEqualTo(testSellerId);
     }
 
     @Test

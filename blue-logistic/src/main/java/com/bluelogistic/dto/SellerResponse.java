@@ -1,10 +1,11 @@
 package com.bluelogistic.dto;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record SellerResponse(
-    String id,
-    String userId,
+    UUID id,
+    UUID userId,
     String name,
     String email,
     String companyName,

@@ -4,6 +4,8 @@ import com.bluelogistic.dto.SellerResponse;
 import com.bluelogistic.entity.Seller;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class SellerMapper {
     

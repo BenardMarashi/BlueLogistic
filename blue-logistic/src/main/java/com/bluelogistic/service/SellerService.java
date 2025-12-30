@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -53,14 +54,14 @@ public class SellerService {
         return savedSeller;
     }
     
-    public Seller getSellerById(String sellerId) {
+    public Seller getSellerById(UUID sellerId) {
         return sellerRepository.findByIdWithUser(sellerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Seller", "id", sellerId));
+                .orElseThrow(() -> new ResourceNotFoundException("Seller", "id", sellerId.toString()));
     }
     
-    public Seller getSellerByUserId(String userId) {
+    public Seller getSellerByUserId(UUID userId) {
         return sellerRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Seller", "userId", userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Seller", "userId", userId.toString()));
     }
     
     public Page<Seller> getAllSellers(Pageable pageable) {
@@ -72,9 +73,9 @@ public class SellerService {
     }
     
     @Transactional
-    public Seller updateSellerStatus(String sellerId, boolean isActive) {
+    public Seller updateSellerStatus(UUID sellerId, boolean isActive) {
         Seller seller = sellerRepository.findById(sellerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Seller", "id", sellerId));
+                .orElseThrow(() -> new ResourceNotFoundException("Seller", "id", sellerId.toString()));
         
         seller.setActive(isActive);
         Seller updatedSeller = sellerRepository.save(seller);
@@ -84,9 +85,9 @@ public class SellerService {
     }
     
     @Transactional
-    public Seller updateSellerInfo(String sellerId, String companyName) {
+    public Seller updateSellerInfo(UUID sellerId, String companyName) {
         Seller seller = sellerRepository.findById(sellerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Seller", "id", sellerId));
+                .orElseThrow(() -> new ResourceNotFoundException("Seller", "id", sellerId.toString()));
         
         seller.setCompanyName(companyName);
         Seller updatedSeller = sellerRepository.save(seller);

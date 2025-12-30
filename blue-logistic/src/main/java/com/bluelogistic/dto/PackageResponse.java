@@ -2,10 +2,11 @@ package com.bluelogistic.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record PackageResponse(
-    String id,
-    String sellerId,
+    UUID id,
+    UUID sellerId,
     String sellerName,
     String trackingNumber,
     String description,

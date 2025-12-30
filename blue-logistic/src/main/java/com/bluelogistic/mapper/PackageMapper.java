@@ -5,6 +5,8 @@ import com.bluelogistic.dto.PackageResponse;
 import com.bluelogistic.entity.Package;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class PackageMapper {
     
