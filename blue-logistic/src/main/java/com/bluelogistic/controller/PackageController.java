@@ -5,6 +5,7 @@ import com.bluelogistic.entity.Package;
 import com.bluelogistic.entity.Seller;
 import com.bluelogistic.entity.User;
 import com.bluelogistic.entity.enums.Role;
+import com.bluelogistic.entity.enums.PackageStatus;
 import com.bluelogistic.mapper.PackageMapper;
 import com.bluelogistic.service.PackageService;
 import com.bluelogistic.service.SellerService;
@@ -12,6 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,14 +44,26 @@ public class PackageController {
     @GetMapping
     public ResponseEntity<Page<PackageResponse>> getPackages(
             @AuthenticationPrincipal User user,
-            Pageable pageable) {
+            @RequestParam(required = false) PackageStatus status,
+            @RequestParam(required = false) String sellerId,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        
+        Sort sort = sortDir.equalsIgnoreCase("asc") 
+            ? Sort.by(sortBy).ascending() 
+            : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        
         Page<Package> packages;
         
         if (user.getRole() == Role.SELLER) {
             Seller seller = sellerService.getSellerByUserId(user.getId());
-            packages = packageService.getPackagesBySeller(seller.getId(), pageable);
+            packages = packageService.getPackagesBySellerFiltered(seller.getId(), status, search, pageable);
         } else {
-            packages = packageService.getPackages(pageable);
+            packages = packageService.getPackagesFiltered(status, sellerId, search, pageable);
         }
         
         return ResponseEntity.ok(packages.map(packageMapper::toResponse));

@@ -29,4 +29,21 @@ public interface PackageRepository extends JpaRepository<Package, String> {
     Optional<Package> findByIdWithSeller(@Param("id") String id);
     
     boolean existsByTrackingNumber(String trackingNumber);
+    
+    Page<Package> findBySellerIdAndStatus(String sellerId, PackageStatus status, Pageable pageable);
+
+    @Query("SELECT p FROM Package p WHERE p.seller.id = :sellerId " +
+           "AND LOWER(p.customerName) LIKE LOWER(CONCAT('%', :search, '%'))")
+    Page<Package> findBySellerIdAndCustomerNameContaining(
+        @Param("sellerId") String sellerId, 
+        @Param("search") String search, 
+        Pageable pageable);
+
+    @Query("SELECT p FROM Package p WHERE " +
+           "LOWER(p.customerName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(p.trackingNumber) LIKE LOWER(CONCAT('%', :search, '%'))")
+    Page<Package> searchByCustomerNameOrTracking(@Param("search") String search, Pageable pageable);
+
+    @Query("SELECT p FROM Package p JOIN FETCH p.seller WHERE p.seller.id = :sellerId")
+    Page<Package> findBySellerIdWithSeller(@Param("sellerId") String sellerId, Pageable pageable);
 }

@@ -5,6 +5,7 @@ import com.bluelogistic.entity.Seller;
 import com.bluelogistic.entity.enums.PackageStatus;
 import com.bluelogistic.exception.BusinessException;
 import com.bluelogistic.exception.ResourceNotFoundException;
+import com.bluelogistic.exception.InvalidStatusTransitionException;
 import com.bluelogistic.repository.PackageRepository;
 import com.bluelogistic.repository.SellerRepository;
 import lombok.RequiredArgsConstructor;
@@ -111,6 +112,32 @@ public class PackageService {
         log.info("Package {} deleted successfully", packageId);
     }
     
+    public Page<Package> getPackagesFiltered(PackageStatus status, String sellerId, String search, Pageable pageable) {
+        if (search != null && !search.isBlank()) {
+            return packageRepository.searchByCustomerNameOrTracking(search.trim(), pageable);
+        }
+        if (sellerId != null && status != null) {
+            return packageRepository.findBySellerIdAndStatus(sellerId, status, pageable);
+        }
+        if (sellerId != null) {
+            return packageRepository.findBySellerId(sellerId, pageable);
+        }
+        if (status != null) {
+            return packageRepository.findByStatus(status, pageable);
+        }
+        return packageRepository.findAll(pageable);
+    }
+
+    public Page<Package> getPackagesBySellerFiltered(String sellerId, PackageStatus status, String search, Pageable pageable) {
+        if (search != null && !search.isBlank()) {
+            return packageRepository.findBySellerIdAndCustomerNameContaining(sellerId, search.trim(), pageable);
+        }
+        if (status != null) {
+            return packageRepository.findBySellerIdAndStatus(sellerId, status, pageable);
+        }
+        return packageRepository.findBySellerId(sellerId, pageable);
+    }
+    
     private void validateStatusTransition(PackageStatus currentStatus, PackageStatus newStatus) {
         boolean isValid = switch (currentStatus) {
             case CREATED -> newStatus == PackageStatus.IN_STORAGE;
@@ -119,9 +146,7 @@ public class PackageService {
         };
         
         if (!isValid) {
-            throw new BusinessException(
-                String.format("Invalid status transition from %s to %s", currentStatus, newStatus)
-            );
+            throw new InvalidStatusTransitionException(currentStatus.name(), newStatus.name());
         }
     }
 }

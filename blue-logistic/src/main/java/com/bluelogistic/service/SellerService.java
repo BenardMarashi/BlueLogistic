@@ -5,6 +5,7 @@ import com.bluelogistic.entity.User;
 import com.bluelogistic.entity.enums.Role;
 import com.bluelogistic.exception.BusinessException;
 import com.bluelogistic.exception.ResourceNotFoundException;
+import com.bluelogistic.exception.DuplicateResourceException;
 import com.bluelogistic.repository.SellerRepository;
 import com.bluelogistic.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class SellerService {
     @Transactional
     public Seller createSeller(String name, String email, String password, String companyName) {
         if (userRepository.existsByEmail(email)) {
-            throw new BusinessException("Email already exists");
+            throw new DuplicateResourceException("Email already exists: " + email);
         }
         
         User user = new User();

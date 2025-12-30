@@ -3,6 +3,8 @@ package com.bluelogistic.controller;
 import com.bluelogistic.exception.BusinessException;
 import com.bluelogistic.exception.ResourceNotFoundException;
 import com.bluelogistic.exception.UnauthorizedException;
+import com.bluelogistic.exception.DuplicateResourceException;
+import com.bluelogistic.exception.InvalidStatusTransitionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +57,22 @@ public class GlobalExceptionHandler {
         
         errors.put("errors", fieldErrors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+    
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateResource(DuplicateResourceException ex) {
+        log.warn("Duplicate resource: {}", ex.getMessage());
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(InvalidStatusTransitionException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidStatusTransition(InvalidStatusTransitionException ex) {
+        log.warn("Invalid status transition: {}", ex.getMessage());
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
     
     @ExceptionHandler(Exception.class)
