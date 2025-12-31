@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Brand color utility classes */
+.text-brand-blue {
+  color: #0D2556;
+}
+
+.text-brand-orange {
+  color: #D8420E;
+}
+
+.bg-brand-blue {
+  background-color: #0D2556;
+}
+
+.bg-brand-orange {
+  background-color: #D8420E;
+}
+
+.bg-brand-background {
+  background-color: #F8FAFC;
+}

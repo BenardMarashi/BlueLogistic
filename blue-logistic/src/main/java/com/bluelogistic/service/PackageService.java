@@ -63,7 +63,7 @@ public class PackageService {
     
     @Transactional
     public Package updatePackageStatus(UUID packageId, PackageStatus newStatus) {
-        Package pkg = packageRepository.findById(packageId)
+        Package pkg = packageRepository.findByIdWithSeller(packageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId.toString()));
         
         validateStatusTransition(pkg.getStatus(), newStatus);
@@ -77,7 +77,7 @@ public class PackageService {
     
     @Transactional
     public Package updateTrackingNumber(UUID packageId, String trackingNumber) {
-        Package pkg = packageRepository.findById(packageId)
+        Package pkg = packageRepository.findByIdWithSeller(packageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId.toString()));
         
         if (pkg.getStatus() != PackageStatus.IN_STORAGE && pkg.getStatus() != PackageStatus.DISPATCHED) {

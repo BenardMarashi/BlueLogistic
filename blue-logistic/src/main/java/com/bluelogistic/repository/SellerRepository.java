@@ -2,6 +2,9 @@ package com.bluelogistic.repository;
 
 import com.bluelogistic.entity.Seller;
 import com.bluelogistic.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +25,11 @@ public interface SellerRepository extends JpaRepository<Seller, UUID> {
     
     @Query("SELECT s FROM Seller s JOIN FETCH s.user WHERE s.id = :id")
     Optional<Seller> findByIdWithUser(@Param("id") UUID id);
+    
+    @Override
+    @EntityGraph(attributePaths = {"user"})
+    Page<Seller> findAll(Pageable pageable);
+    
+    @Query("SELECT s FROM Seller s JOIN FETCH s.user")
+    List<Seller> findAllWithUser();
 }
