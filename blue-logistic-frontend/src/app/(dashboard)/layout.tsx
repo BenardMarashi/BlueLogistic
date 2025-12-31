@@ -35,8 +35,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="h-8 w-8 animate-spin text-brand-blue" />
+      <div className="min-h-screen flex items-center justify-center bg-[#F1F5F9]">
+        <Loader2 className="h-8 w-8 animate-spin text-[#0D2556]" />
       </div>
     );
   }
@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#F1F5F9]">
       <Sidebar />
       <main className="lg:pl-64">{children}</main>
     </div>

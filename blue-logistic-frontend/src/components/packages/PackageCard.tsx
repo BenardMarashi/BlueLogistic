@@ -12,31 +12,31 @@ interface PackageCardProps {
 
 export function PackageCard({ pkg, href }: PackageCardProps) {
   return (
-    <Link href={href}>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer">
-        <CardHeader className="pb-2">
+    <Link href={href} className="block">
+      <Card className="bg-white hover:shadow-xl transition-all duration-300 cursor-pointer border-slate-200 hover:border-[#D8420E]/30 group">
+        <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <p className="font-semibold truncate">{pkg.customerName}</p>
-              <p className="text-sm text-slate-500 truncate">{pkg.description}</p>
+              <p className="font-semibold text-slate-900 truncate group-hover:text-[#0D2556] transition-colors">{pkg.customerName}</p>
+              <p className="text-sm text-slate-600 truncate mt-1">{pkg.description}</p>
             </div>
             <StatusBadge status={pkg.status} />
           </div>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <div className="flex items-center gap-2 text-slate-500">
-            <Scale className="h-4 w-4 shrink-0" />
-            <span>{formatWeight(pkg.weight)}</span>
+        <CardContent className="space-y-3 text-sm">
+          <div className="flex items-center gap-2 text-slate-600">
+            <Scale className="h-4 w-4 shrink-0 text-[#0D2556]" />
+            <span className="font-medium">{formatWeight(pkg.weight)}</span>
           </div>
-          <div className="flex items-center gap-2 text-slate-500">
-            <MapPin className="h-4 w-4 shrink-0" />
+          <div className="flex items-center gap-2 text-slate-600">
+            <MapPin className="h-4 w-4 shrink-0 text-[#0D2556]" />
             <span className="truncate">{pkg.deliveryAddress}</span>
           </div>
           {pkg.trackingNumber && (
-            <div className="pt-2 border-t">
-              <div className="flex items-center gap-2">
-                <Truck className="h-4 w-4 text-brand-orange" />
-                <span className="font-mono text-sm">{pkg.trackingNumber}</span>
+            <div className="pt-2 border-t border-slate-100">
+              <div className="flex items-center gap-2 bg-orange-50 rounded-lg px-3 py-2">
+                <Truck className="h-4 w-4 text-[#D8420E]" />
+                <span className="font-mono text-sm font-semibold text-[#D8420E]">{pkg.trackingNumber}</span>
               </div>
             </div>
           )}

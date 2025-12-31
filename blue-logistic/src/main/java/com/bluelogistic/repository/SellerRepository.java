@@ -25,7 +25,11 @@ public interface SellerRepository extends JpaRepository<Seller, UUID> {
     
     @Query("SELECT s FROM Seller s JOIN FETCH s.user WHERE s.id = :id")
     Optional<Seller> findByIdWithUser(@Param("id") UUID id);
-    
+
+    @Override
+    @EntityGraph(attributePaths = {"user"})
+    Optional<Seller> findById(UUID id);
+
     @Override
     @EntityGraph(attributePaths = {"user"})
     Page<Seller> findAll(Pageable pageable);

@@ -16,7 +16,13 @@ import java.util.UUID;
 
 @Repository
 public interface PackageRepository extends JpaRepository<Package, UUID> {
-    
+
+    @EntityGraph(attributePaths = {"seller"})
+    Page<Package> findAll(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"seller"})
+    Optional<Package> findById(UUID id);
+
     Optional<Package> findByTrackingNumber(String trackingNumber);
     
     Page<Package> findBySeller(Seller seller, Pageable pageable);
