@@ -41,6 +41,9 @@ class SellerServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private AuditService auditService;
+
     @InjectMocks
     private SellerService sellerService;
 

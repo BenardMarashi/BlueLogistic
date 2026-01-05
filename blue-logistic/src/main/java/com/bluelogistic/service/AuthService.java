@@ -1,6 +1,7 @@
 package com.bluelogistic.service;
 
 import com.bluelogistic.entity.User;
+import com.bluelogistic.entity.enums.AuditAction;
 import com.bluelogistic.exception.BusinessException;
 import com.bluelogistic.exception.ResourceNotFoundException;
 import com.bluelogistic.exception.UnauthorizedException;
@@ -23,6 +24,7 @@ public class AuthService implements UserDetailsService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
     
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -32,12 +34,19 @@ public class AuthService implements UserDetailsService {
     
     public User authenticate(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
-        
-        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+                .orElse(null);
+
+        if (user == null) {
+            auditService.logLogin(null, email, false);
             throw new UnauthorizedException("Invalid email or password");
         }
-        
+
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            auditService.logLogin(user.getId(), email, false);
+            throw new UnauthorizedException("Invalid email or password");
+        }
+
+        auditService.logLogin(user.getId(), email, true);
         log.info("User authenticated successfully: {}", email);
         return user;
     }
@@ -53,7 +62,8 @@ public class AuthService implements UserDetailsService {
         
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-        
+
+        auditService.logPasswordChange(user.getId(), user.getEmail());
         log.info("Password changed successfully for user: {}", user.getEmail());
     }
     

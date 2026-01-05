@@ -46,6 +46,9 @@ class PackageServiceTest {
     @Mock
     private PricingService pricingService;
 
+    @Mock
+    private AuditService auditService;
+
     @InjectMocks
     private PackageService packageService;
 

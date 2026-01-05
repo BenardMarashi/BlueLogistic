@@ -2,6 +2,7 @@ package com.bluelogistic.service;
 
 import com.bluelogistic.entity.Package;
 import com.bluelogistic.entity.Seller;
+import com.bluelogistic.entity.enums.AuditAction;
 import com.bluelogistic.entity.enums.PackageStatus;
 import com.bluelogistic.exception.BusinessException;
 import com.bluelogistic.exception.ResourceNotFoundException;
@@ -27,6 +28,7 @@ public class PackageService {
     private final PackageRepository packageRepository;
     private final SellerRepository sellerRepository;
     private final PricingService pricingService;
+    private final AuditService auditService;
     
     @Transactional
     public Package createPackage(UUID sellerId, Package packageData) {
@@ -50,8 +52,11 @@ public class PackageService {
         packageData.setPriceBreakdown(priceResult.breakdown());
 
         Package savedPackage = packageRepository.save(packageData);
+
+        auditService.logAction(seller.getUser().getId(), seller.getUser().getEmail(),
+                AuditAction.CREATE, "Package", savedPackage.getId(), null, savedPackage);
         log.info("Package created with ID: {} for seller: {}", savedPackage.getId(), sellerId);
-        
+
         return savedPackage;
     }
     
@@ -76,13 +81,15 @@ public class PackageService {
     public Package updatePackageStatus(UUID packageId, PackageStatus newStatus) {
         Package pkg = packageRepository.findByIdWithSeller(packageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId.toString()));
-        
+
         validateStatusTransition(pkg.getStatus(), newStatus);
-        
+
+        PackageStatus oldStatus = pkg.getStatus();
         pkg.setStatus(newStatus);
         Package updatedPackage = packageRepository.save(pkg);
-        
-        log.info("Package {} status updated from {} to {}", packageId, pkg.getStatus(), newStatus);
+
+        auditService.logAction(null, null, AuditAction.STATUS_CHANGE, "Package", packageId, oldStatus, newStatus);
+        log.info("Package {} status updated from {} to {}", packageId, oldStatus, newStatus);
         return updatedPackage;
     }
     
@@ -105,21 +112,24 @@ public class PackageService {
         }
         
         Package updatedPackage = packageRepository.save(pkg);
+
+        auditService.logAction(null, null, AuditAction.UPDATE, "Package", packageId, null, trackingNumber);
         log.info("Tracking number {} added to package {}", trackingNumber, packageId);
-        
+
         return updatedPackage;
     }
-    
+
     @Transactional
     public void deletePackage(UUID packageId) {
         Package pkg = packageRepository.findById(packageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Package", "id", packageId.toString()));
-        
+
         if (pkg.getStatus() != PackageStatus.CREATED) {
             throw new BusinessException("Only packages with CREATED status can be deleted");
         }
-        
+
         packageRepository.deleteById(packageId);
+        auditService.logAction(null, null, AuditAction.DELETE, "Package", packageId, pkg, null);
         log.info("Package {} deleted successfully", packageId);
     }
     

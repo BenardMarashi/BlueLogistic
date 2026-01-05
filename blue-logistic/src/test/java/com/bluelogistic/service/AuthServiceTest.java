@@ -32,6 +32,9 @@ class AuthServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private AuditService auditService;
+
     @InjectMocks
     private AuthService authService;
 

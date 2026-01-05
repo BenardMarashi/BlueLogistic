@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/packages")
+@RequestMapping("/api/v1/packages")
 @RequiredArgsConstructor
 @Tag(name = "Packages", description = "Package management operations")
 @SecurityRequirement(name = "bearerAuth")

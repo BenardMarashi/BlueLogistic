@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/sellers")
+@RequestMapping("/api/v1/sellers")
 @PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 @Tag(name = "Sellers", description = "Seller management operations (Admin only)")
