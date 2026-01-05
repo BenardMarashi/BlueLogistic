@@ -7,17 +7,23 @@ import { StatusBadge } from "@/components/packages/StatusBadge";
 import { usePackage } from "@/hooks/usePackages";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDate, formatWeight, formatPrice, getCountryName } from "@/lib/utils";
+import { formatDate, formatWeight, formatPrice } from "@/lib/utils";
 import { MapPin, Phone, Mail, Scale, Calendar, Truck, Globe, Euro } from "lucide-react";
+import { useTranslations } from "@/hooks/useLocale";
 
 export default function PackageDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: pkg, isLoading } = usePackage(id);
+  const t = useTranslations("packages");
+  const ts = useTranslations("status");
+  const tt = useTranslations("tracking");
+  const tp = useTranslations("pricing");
+  const tc = useTranslations("countries");
 
   if (isLoading) {
     return (
       <>
-        <Header title="Package Details" />
+        <Header title={t("packageDetails")} />
         <div className="p-4 sm:p-6">
           <Skeleton className="h-8 w-48 mb-6" />
           <Skeleton className="h-64 w-full max-w-2xl" />
@@ -29,7 +35,7 @@ export default function PackageDetailPage() {
   if (!pkg) {
     return (
       <>
-        <Header title="Package Details" />
+        <Header title={t("packageDetails")} />
         <div className="p-4 sm:p-6"><p>Package not found</p></div>
       </>
     );
@@ -37,15 +43,15 @@ export default function PackageDetailPage() {
 
   return (
     <>
-      <Header title="Package Details" />
+      <Header title={t("packageDetails")} />
       <div className="p-4 sm:p-6">
-        <PageHeader title={`Package for ${pkg.customerName}`} backHref="/seller/packages" />
+        <PageHeader title={t("packageFor", { name: pkg.customerName })} backHref="/seller/packages" />
 
         <div className="grid gap-6 max-w-2xl">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Status</CardTitle>
+                <CardTitle className="text-lg">{ts("status")}</CardTitle>
                 <StatusBadge status={pkg.status} />
               </div>
             </CardHeader>
@@ -54,18 +60,18 @@ export default function PackageDetailPage() {
                 <div className="flex items-center gap-2">
                   <Truck className="h-5 w-5 text-brand-orange" />
                   <div>
-                    <p className="text-sm text-slate-500">Tracking Number</p>
+                    <p className="text-sm text-slate-500">{tt("trackingNumber")}</p>
                     <p className="font-mono font-semibold">{pkg.trackingNumber}</p>
                   </div>
                 </div>
               ) : (
-                <p className="text-slate-500">Tracking number will appear when package is dispatched</p>
+                <p className="text-slate-500">{tt("noTracking")}</p>
               )}
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader><CardTitle className="text-lg">Customer Details</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-lg">{t("customer")}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <p className="font-semibold">{pkg.customerName}</p>
               <div className="flex items-center gap-2 text-sm"><Mail className="h-4 w-4 text-slate-400" /><span>{pkg.customerEmail}</span></div>
@@ -75,17 +81,17 @@ export default function PackageDetailPage() {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle className="text-lg">Package Details</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-lg">{t("packageDetails")}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <div><p className="text-sm text-slate-500">Description</p><p>{pkg.description}</p></div>
+              <div><p className="text-sm text-slate-500">{t("description")}</p><p>{pkg.description}</p></div>
               <div className="flex items-center gap-2"><Scale className="h-4 w-4 text-slate-400" /><span>{formatWeight(pkg.weight)}</span></div>
-              <div className="flex items-center gap-2"><Globe className="h-4 w-4 text-slate-400" /><span>Destination: {getCountryName(pkg.destinationCountry)}</span></div>
-              <div className="flex items-center gap-2 text-sm text-slate-500"><Calendar className="h-4 w-4" /><span>Created {formatDate(pkg.createdAt)}</span></div>
+              <div className="flex items-center gap-2"><Globe className="h-4 w-4 text-slate-400" /><span>{t("destination")}: {tc(pkg.destinationCountry)}</span></div>
+              <div className="flex items-center gap-2 text-sm text-slate-500"><Calendar className="h-4 w-4" /><span>{t("created")} {formatDate(pkg.createdAt)}</span></div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader><CardTitle className="text-lg">Pricing</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-lg">{tp("pricing")}</CardTitle></CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
                 <Euro className="h-5 w-5 text-[#D8420E]" />

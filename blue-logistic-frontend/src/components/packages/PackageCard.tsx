@@ -1,9 +1,12 @@
+"use client";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Package } from "@/types";
 import { StatusBadge } from "./StatusBadge";
-import { formatDate, formatWeight, formatPrice, getCountryName } from "@/lib/utils";
+import { formatDate, formatWeight, formatPrice } from "@/lib/utils";
 import { MapPin, Scale, Truck, Euro, Globe } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "@/hooks/useLocale";
 
 interface PackageCardProps {
   pkg: Package;
@@ -11,6 +14,9 @@ interface PackageCardProps {
 }
 
 export function PackageCard({ pkg, href }: PackageCardProps) {
+  const t = useTranslations("packages");
+  const tc = useTranslations("countries");
+
   return (
     <Link href={href} className="block">
       <Card className="bg-white hover:shadow-xl transition-all duration-300 cursor-pointer border-slate-200 hover:border-[#D8420E]/30 group">
@@ -30,7 +36,7 @@ export function PackageCard({ pkg, href }: PackageCardProps) {
           </div>
           <div className="flex items-center gap-2 text-slate-600">
             <Globe className="h-4 w-4 shrink-0 text-[#0D2556]" />
-            <span>{getCountryName(pkg.destinationCountry)}</span>
+            <span>{tc(pkg.destinationCountry)}</span>
           </div>
           <div className="flex items-center gap-2 text-slate-600">
             <MapPin className="h-4 w-4 shrink-0 text-[#0D2556]" />
@@ -48,7 +54,7 @@ export function PackageCard({ pkg, href }: PackageCardProps) {
               </div>
             </div>
           )}
-          <p className="text-xs text-slate-400 pt-2">Created {formatDate(pkg.createdAt)}</p>
+          <p className="text-xs text-slate-400 pt-2">{t("created")} {formatDate(pkg.createdAt)}</p>
         </CardContent>
       </Card>
     </Link>

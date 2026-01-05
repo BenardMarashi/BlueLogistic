@@ -6,9 +6,11 @@ import { Package } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoginForm } from "@/components/forms/LoginForm";
 import { authService } from "@/services";
+import { useTranslations } from "@/hooks/useLocale";
 
 export default function LoginPage() {
   const router = useRouter();
+  const t = useTranslations("auth");
 
   useEffect(() => {
     const user = authService.getStoredUser();
@@ -26,14 +28,14 @@ export default function LoginPage() {
             <Package className="h-10 w-10 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">BlueLogistic</h1>
-          <p className="text-white/70 text-lg">Package Management Platform</p>
+          <p className="text-white/70 text-lg">{t("platformDescription")}</p>
         </div>
 
         {/* Login Card */}
         <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur">
           <CardHeader className="text-center pb-6">
-            <CardTitle className="text-2xl text-[#0D2556]">Welcome back</CardTitle>
-            <CardDescription className="text-slate-600">Sign in to your account to continue</CardDescription>
+            <CardTitle className="text-2xl text-[#0D2556]">{t("welcomeBack")}</CardTitle>
+            <CardDescription className="text-slate-600">{t("signInToAccount")}</CardDescription>
           </CardHeader>
           <CardContent className="pb-8">
             <LoginForm />

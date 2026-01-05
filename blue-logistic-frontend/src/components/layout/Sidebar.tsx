@@ -5,28 +5,30 @@ import { usePathname } from "next/navigation";
 import { Package, Users, PlusCircle, LogOut, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslations } from "@/hooks/useLocale";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 
 interface NavItem {
-  label: string;
+  labelKey: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
 }
 
 const adminNavItems: NavItem[] = [
-  { label: "Packages", href: "/admin/packages", icon: Package },
-  { label: "Sellers", href: "/admin/sellers", icon: Users },
+  { labelKey: "packages", href: "/admin/packages", icon: Package },
+  { labelKey: "allSellers", href: "/admin/sellers", icon: Users },
 ];
 
 const sellerNavItems: NavItem[] = [
-  { label: "My Packages", href: "/seller/packages", icon: Package },
-  { label: "New Package", href: "/seller/packages/new", icon: PlusCircle },
+  { labelKey: "myPackages", href: "/seller/packages", icon: Package },
+  { labelKey: "newPackage", href: "/seller/packages/new", icon: PlusCircle },
 ];
 
 function NavLinks({ items, onItemClick }: { items: NavItem[]; onItemClick?: () => void }) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
 
   return (
     <nav className="flex-1 px-4 py-6 space-y-2">
@@ -46,7 +48,7 @@ function NavLinks({ items, onItemClick }: { items: NavItem[]; onItemClick?: () =
             )}
           >
             <Icon className="h-5 w-5 shrink-0" />
-            <span>{item.label}</span>
+            <span>{t(item.labelKey)}</span>
           </Link>
         );
       })}
@@ -56,6 +58,7 @@ function NavLinks({ items, onItemClick }: { items: NavItem[]; onItemClick?: () =
 
 function SidebarContent({ onItemClick }: { onItemClick?: () => void }) {
   const { user, logout, isAdmin } = useAuth();
+  const t = useTranslations("nav");
   const navItems = isAdmin ? adminNavItems : sellerNavItems;
 
   return (
@@ -88,7 +91,7 @@ function SidebarContent({ onItemClick }: { onItemClick?: () => void }) {
           onClick={logout}
         >
           <LogOut className="h-4 w-4 mr-3" />
-          Sign out
+          {t("logout")}
         </Button>
       </div>
     </div>

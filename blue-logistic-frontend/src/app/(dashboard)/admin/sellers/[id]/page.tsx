@@ -14,12 +14,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatDate, formatWeight } from "@/lib/utils";
 import Link from "next/link";
 import { Building, Mail, Calendar, Eye } from "lucide-react";
+import { useTranslations } from "@/hooks/useLocale";
 
 export default function SellerDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: seller, isLoading: isLoadingSeller } = useSeller(id);
   const { data: packages, isLoading: isLoadingPackages } = usePackages();
   const { mutate: updateStatus, isPending } = useUpdateSellerStatus();
+
+  const t = useTranslations("sellers");
+  const tt = useTranslations("table");
+  const tp = useTranslations("packages");
 
   const sellerPackages = packages?.content.filter((p) => p.sellerId === id) || [];
 
@@ -32,7 +37,7 @@ export default function SellerDetailPage() {
   if (isLoadingSeller) {
     return (
       <>
-        <Header title="Seller Details" />
+        <Header title={t("sellerDetails")} />
         <div className="p-4 sm:p-6">
           <Skeleton className="h-8 w-48 mb-6" />
           <Skeleton className="h-64" />
@@ -42,12 +47,12 @@ export default function SellerDetailPage() {
   }
 
   if (!seller) {
-    return (<><Header title="Seller Details" /><div className="p-4 sm:p-6"><p>Seller not found</p></div></>);
+    return (<><Header title={t("sellerDetails")} /><div className="p-4 sm:p-6"><p>Seller not found</p></div></>);
   }
 
   return (
     <>
-      <Header title="Seller Details" />
+      <Header title={t("sellerDetails")} />
       <div className="p-4 sm:p-6">
         <PageHeader title={seller.companyName} backHref="/admin/sellers" />
 
@@ -55,41 +60,41 @@ export default function SellerDetailPage() {
           <Card className="lg:col-span-1">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Seller Info</CardTitle>
+                <CardTitle className="text-lg">{t("sellerDetails")}</CardTitle>
                 <Badge variant={seller.isActive ? "default" : "secondary"}>
-                  {seller.isActive ? "Active" : "Inactive"}
+                  {seller.isActive ? t("active") : t("inactive")}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2"><Building className="h-4 w-4 text-slate-400" /><span className="font-medium">{seller.companyName}</span></div>
-              <div><p className="text-sm text-slate-500">Contact</p><p className="font-medium">{seller.name}</p></div>
+              <div><p className="text-sm text-slate-500">{t("name")}</p><p className="font-medium">{seller.name}</p></div>
               <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-slate-400" /><span>{seller.email}</span></div>
-              <div className="flex items-center gap-2 text-sm text-slate-500"><Calendar className="h-4 w-4" /><span>Joined {formatDate(seller.createdAt)}</span></div>
+              <div className="flex items-center gap-2 text-sm text-slate-500"><Calendar className="h-4 w-4" /><span>{formatDate(seller.createdAt)}</span></div>
               <div className="pt-4 border-t">
                 <Button variant={seller.isActive ? "destructive" : "default"} onClick={handleToggleStatus} disabled={isPending} className="w-full">
-                  {seller.isActive ? "Deactivate Seller" : "Activate Seller"}
+                  {seller.isActive ? t("deactivate") : t("activate")}
                 </Button>
               </div>
             </CardContent>
           </Card>
 
           <Card className="lg:col-span-2">
-            <CardHeader><CardTitle className="text-lg">Packages ({sellerPackages.length})</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-lg">{tp("title")} ({sellerPackages.length})</CardTitle></CardHeader>
             <CardContent className="p-0">
               {isLoadingPackages ? (
                 <div className="p-6"><Skeleton className="h-24" /></div>
               ) : sellerPackages.length === 0 ? (
-                <div className="p-6 text-center text-slate-500">No packages from this seller yet</div>
+                <div className="p-6 text-center text-slate-500">{tp("noPackagesYet")}</div>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Weight</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Created</TableHead>
-                      <TableHead className="text-right">View</TableHead>
+                      <TableHead>{tt("customer")}</TableHead>
+                      <TableHead>{tt("weight")}</TableHead>
+                      <TableHead>{tt("status")}</TableHead>
+                      <TableHead>{tt("createdAt")}</TableHead>
+                      <TableHead className="text-right">{tt("actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

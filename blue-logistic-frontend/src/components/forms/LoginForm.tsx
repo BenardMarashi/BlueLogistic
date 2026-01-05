@@ -9,10 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { loginSchema, LoginFormData } from "@/lib/validations";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslations } from "@/hooks/useLocale";
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+  const t = useTranslations("auth");
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -38,9 +40,9 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("email")}</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="Enter your email" autoComplete="email" disabled={isLoading} {...field} />
+                <Input type="email" placeholder={t("email")} autoComplete="email" disabled={isLoading} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -51,9 +53,9 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("password")}</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Enter your password" autoComplete="current-password" disabled={isLoading} {...field} />
+                <Input type="password" placeholder={t("password")} autoComplete="current-password" disabled={isLoading} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -63,10 +65,10 @@ export function LoginForm() {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing in...
+              {t("signingIn")}
             </>
           ) : (
-            "Sign in"
+            t("signIn")
           )}
         </Button>
       </form>

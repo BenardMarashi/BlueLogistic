@@ -11,10 +11,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Users, Eye, ToggleLeft, ToggleRight } from "lucide-react";
+import { useTranslations } from "@/hooks/useLocale";
 
 export default function AdminSellersPage() {
   const { data, isLoading } = useSellers();
   const { mutate: updateStatus, isPending } = useUpdateSellerStatus();
+  const t = useTranslations("sellers");
+  const tt = useTranslations("table");
+  const tn = useTranslations("nav");
 
   const handleToggleStatus = (id: string, currentStatus: boolean) => {
     updateStatus({ id, request: { isActive: !currentStatus } });
@@ -22,9 +26,9 @@ export default function AdminSellersPage() {
 
   return (
     <>
-      <Header title="Sellers" />
+      <Header title={t("title")} />
       <div className="p-4 sm:p-6">
-        <PageHeader title="Sellers" description="Manage seller accounts" actionLabel="Add Seller" actionHref="/admin/sellers/new" />
+        <PageHeader title={t("title")} description={t("manageAllSellers")} actionLabel={tn("newSeller")} actionHref="/admin/sellers/new" />
 
         <Card>
           <CardContent className="p-0">
@@ -35,18 +39,18 @@ export default function AdminSellersPage() {
             ) : data?.content.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <Users className="h-12 w-12 text-slate-300 mb-4" />
-                <p className="text-slate-500">No sellers yet</p>
+                <p className="text-slate-500">{t("noSellersYet")}</p>
               </div>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Company</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t("companyName")}</TableHead>
+                    <TableHead>{t("name")}</TableHead>
+                    <TableHead>{tt("email")}</TableHead>
+                    <TableHead>{tt("status")}</TableHead>
+                    <TableHead>{tt("createdAt")}</TableHead>
+                    <TableHead className="text-right">{tt("actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -57,7 +61,7 @@ export default function AdminSellersPage() {
                       <TableCell>{seller.email}</TableCell>
                       <TableCell>
                         <Badge variant={seller.isActive ? "default" : "secondary"}>
-                          {seller.isActive ? "Active" : "Inactive"}
+                          {seller.isActive ? t("active") : t("inactive")}
                         </Badge>
                       </TableCell>
                       <TableCell>{formatDate(seller.createdAt)}</TableCell>
