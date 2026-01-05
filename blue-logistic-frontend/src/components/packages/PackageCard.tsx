@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Package } from "@/types";
 import { StatusBadge } from "./StatusBadge";
-import { formatDate, formatWeight } from "@/lib/utils";
-import { MapPin, Scale, Truck } from "lucide-react";
+import { formatDate, formatWeight, formatPrice, getCountryName } from "@/lib/utils";
+import { MapPin, Scale, Truck, Euro, Globe } from "lucide-react";
 import Link from "next/link";
 
 interface PackageCardProps {
@@ -29,8 +29,16 @@ export function PackageCard({ pkg, href }: PackageCardProps) {
             <span className="font-medium">{formatWeight(pkg.weight)}</span>
           </div>
           <div className="flex items-center gap-2 text-slate-600">
+            <Globe className="h-4 w-4 shrink-0 text-[#0D2556]" />
+            <span>{getCountryName(pkg.destinationCountry)}</span>
+          </div>
+          <div className="flex items-center gap-2 text-slate-600">
             <MapPin className="h-4 w-4 shrink-0 text-[#0D2556]" />
             <span className="truncate">{pkg.deliveryAddress}</span>
+          </div>
+          <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+            <Euro className="h-4 w-4 shrink-0 text-[#D8420E]" />
+            <span className="font-semibold text-[#D8420E]">{formatPrice(pkg.sellerPrice)}</span>
           </div>
           {pkg.trackingNumber && (
             <div className="pt-2 border-t border-slate-100">

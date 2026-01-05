@@ -14,6 +14,10 @@ export interface Package {
   status: PackageStatus;
   createdAt: string;
   updatedAt: string;
+  destinationCountry: string;
+  costPrice?: number;      // only present for admin
+  sellerPrice: number;
+  priceBreakdown?: string; // only present for admin
 }
 
 export interface CreatePackageRequest {
@@ -23,6 +27,7 @@ export interface CreatePackageRequest {
   customerEmail: string;
   customerPhone: string;
   deliveryAddress: string;
+  destinationCountry: string;
 }
 
 export interface UpdateStatusRequest {

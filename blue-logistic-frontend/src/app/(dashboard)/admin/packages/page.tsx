@@ -7,7 +7,7 @@ import { usePackages } from "@/hooks/usePackages";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatDate, formatWeight } from "@/lib/utils";
+import { formatDate, formatWeight, formatPrice, getCountryName } from "@/lib/utils";
 import Link from "next/link";
 import { Package as PackageIcon, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,11 +39,12 @@ export default function AdminPackagesPage() {
                     <TableRow className="bg-slate-50 hover:bg-slate-50">
                       <TableHead className="font-semibold text-slate-700">Customer</TableHead>
                       <TableHead className="font-semibold text-slate-700">Seller</TableHead>
-                      <TableHead className="font-semibold text-slate-700">Description</TableHead>
+                      <TableHead className="font-semibold text-slate-700">Destination</TableHead>
                       <TableHead className="font-semibold text-slate-700">Weight</TableHead>
+                      <TableHead className="font-semibold text-slate-700">Cost</TableHead>
+                      <TableHead className="font-semibold text-slate-700">Seller Price</TableHead>
                       <TableHead className="font-semibold text-slate-700">Status</TableHead>
                       <TableHead className="font-semibold text-slate-700">Tracking</TableHead>
-                      <TableHead className="font-semibold text-slate-700">Created</TableHead>
                       <TableHead className="text-right font-semibold text-slate-700">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -52,11 +53,12 @@ export default function AdminPackagesPage() {
                       <TableRow key={pkg.id} className="hover:bg-slate-50 transition-colors">
                         <TableCell className="font-medium text-slate-900">{pkg.customerName}</TableCell>
                         <TableCell className="text-slate-700">{pkg.sellerName}</TableCell>
-                        <TableCell className="max-w-[200px] truncate text-slate-600">{pkg.description}</TableCell>
+                        <TableCell className="text-slate-700">{getCountryName(pkg.destinationCountry)}</TableCell>
                         <TableCell className="text-slate-700">{formatWeight(pkg.weight)}</TableCell>
+                        <TableCell className="text-slate-700">{formatPrice(pkg.costPrice)}</TableCell>
+                        <TableCell className="font-semibold text-[#D8420E]">{formatPrice(pkg.sellerPrice)}</TableCell>
                         <TableCell><StatusBadge status={pkg.status} /></TableCell>
                         <TableCell className="font-mono text-sm text-slate-600">{pkg.trackingNumber || "-"}</TableCell>
-                        <TableCell className="text-slate-600">{formatDate(pkg.createdAt)}</TableCell>
                         <TableCell className="text-right">
                           <Link href={`/admin/packages/${pkg.id}`}>
                             <Button variant="ghost" size="sm" className="hover:bg-[#0D2556]/5 hover:text-[#0D2556]">

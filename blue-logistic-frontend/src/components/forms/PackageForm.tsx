@@ -6,8 +6,10 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { createPackageSchema, CreatePackageFormData } from "@/lib/validations";
+import { getCountryOptions } from "@/lib/utils";
 
 interface PackageFormProps {
   onSubmit: (data: CreatePackageFormData) => void;
@@ -24,6 +26,7 @@ export function PackageForm({ onSubmit, isLoading = false }: PackageFormProps) {
       customerEmail: "",
       customerPhone: "",
       deliveryAddress: "",
+      destinationCountry: "AT",
     },
   });
 
@@ -59,6 +62,26 @@ export function PackageForm({ onSubmit, isLoading = false }: PackageFormProps) {
                 <Input type="number" step="0.01" placeholder="1.5" disabled={isLoading} {...field}
                   onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="destinationCountry" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Destination Country</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value || "AT"} disabled={isLoading}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {getCountryOptions().map((country) => (
+                    <SelectItem key={country.value} value={country.value}>
+                      {country.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )} />

@@ -23,3 +23,9 @@ application:
 logging:
   level:
     com.bluelogistic: DEBUG
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs

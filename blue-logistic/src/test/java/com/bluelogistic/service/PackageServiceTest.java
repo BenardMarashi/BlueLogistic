@@ -1,5 +1,6 @@
 package com.bluelogistic.service;
 
+import com.bluelogistic.dto.PriceCalculationResult;
 import com.bluelogistic.entity.Package;
 import com.bluelogistic.entity.Seller;
 import com.bluelogistic.entity.User;
@@ -29,6 +30,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +42,9 @@ class PackageServiceTest {
 
     @Mock
     private SellerRepository sellerRepository;
+
+    @Mock
+    private PricingService pricingService;
 
     @InjectMocks
     private PackageService packageService;
@@ -78,12 +84,15 @@ class PackageServiceTest {
         testPackage.setDescription("Test Package");
         testPackage.setWeight(new BigDecimal("2.5"));
         testPackage.setStatus(PackageStatus.CREATED);
+        testPackage.setDestinationCountry("AT");
     }
 
     @Test
     void createPackage_ValidData_ReturnsPackage() {
         // Arrange
         when(sellerRepository.findById(testSellerId)).thenReturn(Optional.of(testSeller));
+        when(pricingService.calculateOptimalPrice(anyString(), anyDouble()))
+            .thenReturn(new PriceCalculationResult(new BigDecimal("3.15"), new BigDecimal("6.30"), "1×1.5kg"));
         when(packageRepository.save(any(Package.class))).thenAnswer(inv -> {
             Package pkg = inv.getArgument(0);
             pkg.setId(UUID.randomUUID());
@@ -94,6 +103,7 @@ class PackageServiceTest {
         newPackage.setCustomerName("Jane Doe");
         newPackage.setDescription("New Package");
         newPackage.setWeight(new BigDecimal("1.5"));
+        newPackage.setDestinationCountry("AT");
 
         // Act
         Package result = packageService.createPackage(testSellerId, newPackage);
@@ -102,6 +112,8 @@ class PackageServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getSeller().getId()).isEqualTo(testSellerId);
         assertThat(result.getStatus()).isEqualTo(PackageStatus.CREATED);
+        assertThat(result.getCostPrice()).isEqualTo(new BigDecimal("3.15"));
+        assertThat(result.getSellerPrice()).isEqualTo(new BigDecimal("6.30"));
         verify(packageRepository).save(any(Package.class));
     }
 
@@ -158,7 +170,7 @@ class PackageServiceTest {
     void updatePackageStatus_ValidTransition_CreatedToInStorage_UpdatesStatus() {
         // Arrange
         testPackage.setStatus(PackageStatus.CREATED);
-        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findByIdWithSeller(testPackageId)).thenReturn(Optional.of(testPackage));
         when(packageRepository.save(any(Package.class))).thenReturn(testPackage);
 
         // Act
@@ -173,7 +185,7 @@ class PackageServiceTest {
     void updatePackageStatus_ValidTransition_InStorageToDispatched_UpdatesStatus() {
         // Arrange
         testPackage.setStatus(PackageStatus.IN_STORAGE);
-        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findByIdWithSeller(testPackageId)).thenReturn(Optional.of(testPackage));
         when(packageRepository.save(any(Package.class))).thenReturn(testPackage);
 
         // Act
@@ -187,7 +199,7 @@ class PackageServiceTest {
     void updatePackageStatus_InvalidTransition_CreatedToDispatched_ThrowsBusinessException() {
         // Arrange
         testPackage.setStatus(PackageStatus.CREATED);
-        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findByIdWithSeller(testPackageId)).thenReturn(Optional.of(testPackage));
 
         // Act & Assert
         assertThatThrownBy(() -> packageService.updatePackageStatus(testPackageId, PackageStatus.DISPATCHED))
@@ -199,7 +211,7 @@ class PackageServiceTest {
     void updatePackageStatus_InvalidTransition_DispatchedToAny_ThrowsBusinessException() {
         // Arrange
         testPackage.setStatus(PackageStatus.DISPATCHED);
-        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findByIdWithSeller(testPackageId)).thenReturn(Optional.of(testPackage));
 
         // Act & Assert
         assertThatThrownBy(() -> packageService.updatePackageStatus(testPackageId, PackageStatus.IN_STORAGE))
@@ -211,7 +223,7 @@ class PackageServiceTest {
     void updateTrackingNumber_ValidPackage_UpdatesTracking() {
         // Arrange
         testPackage.setStatus(PackageStatus.IN_STORAGE);
-        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findByIdWithSeller(testPackageId)).thenReturn(Optional.of(testPackage));
         when(packageRepository.existsByTrackingNumber("TRACK123")).thenReturn(false);
         when(packageRepository.save(any(Package.class))).thenReturn(testPackage);
 
@@ -228,7 +240,7 @@ class PackageServiceTest {
     void updateTrackingNumber_DuplicateTracking_ThrowsBusinessException() {
         // Arrange
         testPackage.setStatus(PackageStatus.IN_STORAGE);
-        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findByIdWithSeller(testPackageId)).thenReturn(Optional.of(testPackage));
         when(packageRepository.existsByTrackingNumber("DUPLICATE")).thenReturn(true);
 
         // Act & Assert
@@ -241,7 +253,7 @@ class PackageServiceTest {
     void updateTrackingNumber_CreatedStatus_ThrowsBusinessException() {
         // Arrange
         testPackage.setStatus(PackageStatus.CREATED);
-        when(packageRepository.findById(testPackageId)).thenReturn(Optional.of(testPackage));
+        when(packageRepository.findByIdWithSeller(testPackageId)).thenReturn(Optional.of(testPackage));
 
         // Act & Assert
         assertThatThrownBy(() -> packageService.updateTrackingNumber(testPackageId, "TRACK123"))

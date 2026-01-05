@@ -6,6 +6,7 @@ import com.bluelogistic.entity.enums.PackageStatus;
 import com.bluelogistic.exception.BusinessException;
 import com.bluelogistic.exception.ResourceNotFoundException;
 import com.bluelogistic.exception.InvalidStatusTransitionException;
+import com.bluelogistic.dto.PriceCalculationResult;
 import com.bluelogistic.repository.PackageRepository;
 import com.bluelogistic.repository.SellerRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class PackageService {
     
     private final PackageRepository packageRepository;
     private final SellerRepository sellerRepository;
+    private final PricingService pricingService;
     
     @Transactional
     public Package createPackage(UUID sellerId, Package packageData) {
@@ -37,7 +39,16 @@ public class PackageService {
         
         packageData.setSeller(seller);
         packageData.setStatus(PackageStatus.CREATED);
-        
+
+        // Calculate pricing
+        PriceCalculationResult priceResult = pricingService.calculateOptimalPrice(
+            packageData.getDestinationCountry(),
+            packageData.getWeight().doubleValue()
+        );
+        packageData.setCostPrice(priceResult.costPrice());
+        packageData.setSellerPrice(priceResult.sellerPrice());
+        packageData.setPriceBreakdown(priceResult.breakdown());
+
         Package savedPackage = packageRepository.save(packageData);
         log.info("Package created with ID: {} for seller: {}", savedPackage.getId(), sellerId);
         

@@ -57,6 +57,18 @@ public class Package {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "destination_country", nullable = false, length = 2)
+    private String destinationCountry = "AT";
+
+    @Column(name = "cost_price", precision = 10, scale = 2)
+    private BigDecimal costPrice;
+
+    @Column(name = "seller_price", precision = 10, scale = 2)
+    private BigDecimal sellerPrice;
+
+    @Column(name = "price_breakdown")
+    private String priceBreakdown;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

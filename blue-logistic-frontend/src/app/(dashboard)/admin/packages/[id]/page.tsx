@@ -11,8 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { formatDate, formatWeight } from "@/lib/utils";
-import { MapPin, Phone, Mail, Scale, Calendar, Store, Trash2, Truck } from "lucide-react";
+import { formatDate, formatWeight, formatPrice, getCountryName } from "@/lib/utils";
+import { MapPin, Phone, Mail, Scale, Calendar, Store, Trash2, Truck, Globe, Euro } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import { PackageStatus } from "@/types";
 
 export default function AdminPackageDetailPage() {
@@ -89,6 +90,35 @@ export default function AdminPackageDetailPage() {
               <CardHeader><CardTitle className="text-lg">Seller</CardTitle></CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2"><Store className="h-4 w-4 text-slate-400" /><span className="font-medium">{pkg.sellerName}</span></div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="text-lg">Pricing Details</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Destination:</span>
+                  <span className="font-medium">{getCountryName(pkg.destinationCountry)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Weight:</span>
+                  <span className="font-medium">{formatWeight(pkg.weight)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Cost Price:</span>
+                  <span className="font-medium">{formatPrice(pkg.costPrice)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Seller Price:</span>
+                  <span className="font-bold text-[#D8420E]">{formatPrice(pkg.sellerPrice)}</span>
+                </div>
+                {pkg.priceBreakdown && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Calculation:</span>
+                    <span className="font-mono text-sm bg-slate-100 px-2 py-1 rounded">{pkg.priceBreakdown}</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

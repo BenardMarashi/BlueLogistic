@@ -7,11 +7,12 @@ export const loginSchema = z.object({
 
 export const createPackageSchema = z.object({
   description: z.string().min(1, "Description is required").max(500, "Description too long"),
-  weight: z.number({ invalid_type_error: "Weight must be a number" }).positive("Weight must be positive").max(1000, "Weight cannot exceed 1000 kg"),
+  weight: z.number({ error: "Weight must be a number" }).positive("Weight must be positive").max(1000, "Weight cannot exceed 1000 kg"),
   customerName: z.string().min(2, "Customer name must be at least 2 characters").max(100, "Customer name too long"),
   customerEmail: z.string().min(1, "Customer email is required").email("Invalid email format"),
   customerPhone: z.string().min(8, "Phone must be at least 8 characters").regex(/^\+?[0-9\s\-]+$/, "Invalid phone format"),
   deliveryAddress: z.string().min(5, "Address must be at least 5 characters").max(500, "Address too long"),
+  destinationCountry: z.string().length(2, "Country code must be 2 characters"),
 });
 
 export const createSellerSchema = z.object({

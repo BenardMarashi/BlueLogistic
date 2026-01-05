@@ -36,3 +36,50 @@ export function getStatusColor(status: PackageStatus): string {
 export function formatWeight(weight: number): string {
   return `${weight.toFixed(2)} kg`;
 }
+
+export function formatPrice(amount: number | undefined | null): string {
+  if (amount == null) return '—';
+  return `€${amount.toFixed(2)}`;
+}
+
+export const SUPPORTED_COUNTRIES: Record<string, string> = {
+  AT: 'Austria',
+  BA: 'Bosnia and Herzegovina',
+  BE: 'Belgium',
+  BG: 'Bulgaria',
+  CH: 'Switzerland',
+  CZ: 'Czechia',
+  DE: 'Germany',
+  DK: 'Denmark',
+  EE: 'Estonia',
+  ES: 'Spain',
+  FI: 'Finland',
+  FR: 'France',
+  GR: 'Greece',
+  HR: 'Croatia',
+  HU: 'Hungary',
+  IE: 'Ireland',
+  IS: 'Iceland',
+  IT: 'Italy',
+  LT: 'Lithuania',
+  LU: 'Luxembourg',
+  LV: 'Latvia',
+  NL: 'Netherlands',
+  PL: 'Poland',
+  PT: 'Portugal',
+  RO: 'Romania',
+  RS: 'Serbia',
+  SE: 'Sweden',
+  SI: 'Slovenia',
+  SK: 'Slovakia',
+};
+
+export function getCountryName(code: string): string {
+  return SUPPORTED_COUNTRIES[code?.toUpperCase()] || code;
+}
+
+export function getCountryOptions(): { value: string; label: string }[] {
+  return Object.entries(SUPPORTED_COUNTRIES)
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+}

@@ -7,8 +7,8 @@ import { StatusBadge } from "@/components/packages/StatusBadge";
 import { usePackage } from "@/hooks/usePackages";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDate, formatWeight } from "@/lib/utils";
-import { MapPin, Phone, Mail, Scale, Calendar, Truck } from "lucide-react";
+import { formatDate, formatWeight, formatPrice, getCountryName } from "@/lib/utils";
+import { MapPin, Phone, Mail, Scale, Calendar, Truck, Globe, Euro } from "lucide-react";
 
 export default function PackageDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -79,7 +79,18 @@ export default function PackageDetailPage() {
             <CardContent className="space-y-4">
               <div><p className="text-sm text-slate-500">Description</p><p>{pkg.description}</p></div>
               <div className="flex items-center gap-2"><Scale className="h-4 w-4 text-slate-400" /><span>{formatWeight(pkg.weight)}</span></div>
+              <div className="flex items-center gap-2"><Globe className="h-4 w-4 text-slate-400" /><span>Destination: {getCountryName(pkg.destinationCountry)}</span></div>
               <div className="flex items-center gap-2 text-sm text-slate-500"><Calendar className="h-4 w-4" /><span>Created {formatDate(pkg.createdAt)}</span></div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="text-lg">Pricing</CardTitle></CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-2">
+                <Euro className="h-5 w-5 text-[#D8420E]" />
+                <span className="text-2xl font-bold text-[#D8420E]">{formatPrice(pkg.sellerPrice)}</span>
+              </div>
             </CardContent>
           </Card>
         </div>

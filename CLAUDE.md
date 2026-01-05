@@ -1,10 +1,14 @@
-# CLAUDE.md - BlueLogistic Development Guide
+# CLAUDE.md
 
-## 🎯 Project Purpose
-Package Management Platform for logistics company with multiple sellers.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## 📁 Base Path
-All code goes in: `src/main/java/com/bluelogistic/`
+## Project Overview
+BlueLogistic is a package management platform for logistics companies with multiple sellers. The system consists of a Spring Boot backend (Java 21) and Next.js frontend (TypeScript + React).
+
+**Repository Structure:**
+- `blue-logistic/` - Spring Boot backend API
+- `blue-logistic-frontend/` - Next.js frontend application
+- Backend base path: `src/main/java/com/bluelogistic/`
 
 ## ⚡ Quick Rules
 
@@ -81,20 +85,49 @@ CREATED → IN_STORAGE → DISPATCHED
 - Admin receives → IN_STORAGE
 - Admin ships + adds tracking → DISPATCHED
 
-## 🔧 Commands
+## Development Commands
+
+### Backend (Spring Boot)
+Working directory: `blue-logistic/`
 
 ```bash
 # Compile
 ./mvnw clean compile
 
-# Run tests
+# Run all tests
 ./mvnw test
 
-# Start dev server
+# Run specific test class
+./mvnw test -Dtest=PackageServiceTest
+
+# Run specific test method
+./mvnw test -Dtest=PackageServiceTest#create_ValidRequest_ReturnsPackageResponse
+
+# Start dev server (uses application-dev.yml profile)
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 
-# Package
+# Package for production
 ./mvnw clean package -DskipTests
+```
+
+### Frontend (Next.js)
+Working directory: `blue-logistic-frontend/`
+
+```bash
+# Install dependencies
+npm install
+
+# Run dev server (http://localhost:3000)
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Run linter
+npm run lint
 ```
 
 ## 📝 Naming Conventions
@@ -126,32 +159,48 @@ void updateStatus_InvalidTransition_ThrowsException()
 4. **Wrong Status Code**: POST=201, DELETE=204, GET/PUT/PATCH=200
 5. **Entity Exposure**: Never return entities, always use DTOs
 
-## 📚 Key Dependencies
+## Architecture Details
 
-```xml
-<!-- Already in pom.xml -->
-spring-boot-starter-web
-spring-boot-starter-data-jpa
-spring-boot-starter-security
-spring-boot-starter-validation
-postgresql
-lombok
-
-<!-- Need to add -->
-jjwt-api (0.12.6)
-jjwt-impl (0.12.6)
-jjwt-jackson (0.12.6)
-flyway-core
-flyway-database-postgresql
+### Backend Package Structure
+```
+src/main/java/com/bluelogistic/
+├── config/          # SecurityConfig, JwtAuthenticationFilter, PasswordEncoderConfig
+├── controller/      # AuthController, PackageController, SellerController
+├── dto/             # Request/Response records (e.g., CreatePackageRequest, PackageResponse)
+├── entity/          # JPA entities: User, Seller, Package
+│   └── enums/       # PackageStatus, UserRole
+├── exception/       # BusinessException, ResourceNotFoundException, InvalidStatusTransitionException
+├── mapper/          # Entity ↔ DTO conversion (PackageMapper, SellerMapper, UserMapper)
+├── repository/      # Spring Data JPA repositories with custom queries
+└── service/         # Business logic: AuthService, PackageService, SellerService, JwtService
 ```
 
-## 🎯 Definition of Done
+### Authentication & Authorization
+- **JWT-based authentication** using Spring Security
+- **UserDetailsService** implementation loads users from database
+- **JwtAuthenticationFilter** validates tokens on every request
+- **Method-level security** via `@PreAuthorize` annotations in controllers
+- **Password encoding** uses BCryptPasswordEncoder
+- **Default admin account:** admin@bluelogistic.com / admin123 (created via Flyway migration V4)
 
-- [ ] Code compiles without errors
-- [ ] All endpoints return correct responses
-- [ ] Authentication works (JWT)
-- [ ] Role-based access control works
-- [ ] Validation errors return 400 with details
-- [ ] Database migrations run successfully
-- [ ] No file exceeds line limits
-- [ ] All business logic in services (not controllers)
+### Database Management
+- **Flyway migrations** in `src/main/resources/db/migration/`
+- Migration naming: `V{version}__{description}.sql` (e.g., V1__create_users_table.sql)
+- **H2 in-memory database** used for tests (automatically configured in test profile)
+- **PostgreSQL** for dev/prod environments
+- Entities use UUID primary keys with `@GeneratedValue(strategy = GenerationType.UUID)`
+- Automatic timestamp management via `@PrePersist` and `@PreUpdate` lifecycle callbacks
+
+### Key Dependencies
+- Spring Boot 3.5.9, Java 21
+- Spring Data JPA + Hibernate
+- Spring Security + JWT (jjwt 0.12.6)
+- PostgreSQL + Flyway
+- Lombok for boilerplate reduction
+- Jakarta Validation for DTO validation
+
+### Testing Strategy
+- Service layer tests use Mockito to mock repositories
+- Test naming: `methodName_condition_expectedResult`
+- Tests run against H2 in-memory database
+- Use `@ExtendWith(MockitoExtension.class)` for unit tests

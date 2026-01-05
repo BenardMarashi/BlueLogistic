@@ -18,10 +18,17 @@ public class PackageMapper {
         pkg.setCustomerEmail(request.customerEmail());
         pkg.setCustomerPhone(request.customerPhone());
         pkg.setDeliveryAddress(request.deliveryAddress());
+        pkg.setDestinationCountry(request.destinationCountry() != null
+            ? request.destinationCountry().toUpperCase()
+            : "AT");
         return pkg;
     }
-    
+
     public PackageResponse toResponse(Package pkg) {
+        return toResponse(pkg, false);
+    }
+
+    public PackageResponse toResponse(Package pkg, boolean isAdmin) {
         return new PackageResponse(
             pkg.getId(),
             pkg.getSeller().getId(),
@@ -35,7 +42,11 @@ public class PackageMapper {
             pkg.getDeliveryAddress(),
             pkg.getStatus().name(),
             pkg.getCreatedAt(),
-            pkg.getUpdatedAt()
+            pkg.getUpdatedAt(),
+            pkg.getDestinationCountry(),
+            isAdmin ? pkg.getCostPrice() : null,
+            pkg.getSellerPrice(),
+            isAdmin ? pkg.getPriceBreakdown() : null
         );
     }
 }
