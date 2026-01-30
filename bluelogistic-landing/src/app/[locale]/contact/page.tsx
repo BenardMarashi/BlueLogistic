@@ -14,15 +14,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Mail, Clock, Calendar } from 'lucide-react';
+import { Mail, Clock, Calendar, Loader2 } from 'lucide-react';
 
 export default function ContactPage() {
   const t = useTranslations('contact');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  const [subject, setSubject] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    setIsSubmitting(true);
+    setError('');
+
+    const formData = new FormData(e.currentTarget);
+    formData.append('access_key', 'b9fdd631-7a92-422e-a45d-d9de16ea5a24');
+    formData.append('subject', `BlueLogistic Inquiry: ${subject}`);
+    formData.append('from_name', 'BlueLogistic Contact Form');
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsSubmitted(true);
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+    } catch {
+      setError('Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -65,11 +93,15 @@ export default function ContactPage() {
                     </div>
                   ) : (
                     <form onSubmit={handleSubmit} className="space-y-6">
+                      {/* Honeypot for spam protection */}
+                      <input type="checkbox" name="botcheck" className="hidden" />
+
                       <div>
                         <label className="block text-sm font-medium text-[#0D2556] mb-2">
                           {t('nameLabel')} *
                         </label>
                         <Input
+                          name="name"
                           required
                           placeholder={t('namePlaceholder')}
                           className="border-[#E2E8F0]"
@@ -82,6 +114,7 @@ export default function ContactPage() {
                         </label>
                         <Input
                           type="email"
+                          name="email"
                           required
                           placeholder={t('emailPlaceholder')}
                           className="border-[#E2E8F0]"
@@ -93,6 +126,7 @@ export default function ContactPage() {
                           {t('companyLabel')}
                         </label>
                         <Input
+                          name="company"
                           placeholder={t('companyPlaceholder')}
                           className="border-[#E2E8F0]"
                         />
@@ -102,24 +136,24 @@ export default function ContactPage() {
                         <label className="block text-sm font-medium text-[#0D2556] mb-2">
                           {t('subjectLabel')} *
                         </label>
-                        <Select required>
+                        <Select required value={subject} onValueChange={setSubject}>
                           <SelectTrigger className="border-[#E2E8F0]">
                             <SelectValue placeholder="Select a subject" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="general">
+                            <SelectItem value="General Inquiry">
                               {t('subjects.general')}
                             </SelectItem>
-                            <SelectItem value="demo">
+                            <SelectItem value="Demo Request">
                               {t('subjects.demo')}
                             </SelectItem>
-                            <SelectItem value="support">
+                            <SelectItem value="Support">
                               {t('subjects.support')}
                             </SelectItem>
-                            <SelectItem value="partnership">
+                            <SelectItem value="Partnership">
                               {t('subjects.partnership')}
                             </SelectItem>
-                            <SelectItem value="other">
+                            <SelectItem value="Other">
                               {t('subjects.other')}
                             </SelectItem>
                           </SelectContent>
@@ -131,17 +165,30 @@ export default function ContactPage() {
                           {t('messageLabel')} *
                         </label>
                         <Textarea
+                          name="message"
                           required
                           placeholder={t('messagePlaceholder')}
                           className="border-[#E2E8F0] min-h-[120px]"
                         />
                       </div>
 
+                      {error && (
+                        <p className="text-red-500 text-sm">{error}</p>
+                      )}
+
                       <Button
                         type="submit"
-                        className="w-full bg-[#D8420E] hover:bg-[#b93a0c] text-white"
+                        disabled={isSubmitting}
+                        className="w-full bg-[#D8420E] hover:bg-[#b93a0c] text-white disabled:opacity-50"
                       >
-                        {t('submit')}
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          t('submit')
+                        )}
                       </Button>
                     </form>
                   )}

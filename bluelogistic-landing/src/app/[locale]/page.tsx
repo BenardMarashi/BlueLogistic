@@ -5,7 +5,6 @@ import { HowItWorks } from '@/components/sections/HowItWorks';
 import { PricingPreview } from '@/components/sections/PricingPreview';
 import { Coverage } from '@/components/sections/Coverage';
 import { Testimonials } from '@/components/sections/Testimonials';
-import { Integrations } from '@/components/sections/Integrations';
 import { FAQPreview } from '@/components/sections/FAQPreview';
 import { FinalCTA } from '@/components/sections/FinalCTA';
 
@@ -19,7 +18,6 @@ export default function HomePage() {
       <PricingPreview />
       <Coverage />
       <Testimonials />
-      <Integrations />
       <FAQPreview />
       <FinalCTA />
     </>

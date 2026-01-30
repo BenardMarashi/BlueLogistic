@@ -95,6 +95,35 @@ npm run dev -- -p 3001
 | Dashboard | 3000 | http://localhost:3000 |
 | Landing Page | 3001 | http://localhost:3001 |
 
+## Credentials
+
+### Application Login (Dashboard)
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | `admin@bluelogistic.com` | `admin123` |
+
+> Admin can create new seller accounts via the dashboard.
+
+### Database (PostgreSQL)
+
+| Field | Value |
+|-------|-------|
+| Host | `localhost` |
+| Port | `5432` |
+| Database | `bluelogistic` |
+| Username | `bluelogistic` |
+| Password | `bluelogistic123` |
+
+### Web3Forms (Contact Form)
+
+| Field | Value |
+|-------|-------|
+| Access Key | `b9fdd631-7a92-422e-a45d-d9de16ea5a24` |
+| Recipient Email | `office@bluebear.at` |
+
+> See [Contact Form Configuration](#contact-form-configuration) for setup details.
+
 ## Environment Configuration
 
 See `.env.example` files in each directory for required environment variables.
@@ -224,6 +253,36 @@ cd blue-logistic-frontend && npm install && npm run dev
 # Terminal 4 - Landing Page
 cd bluelogistic-landing && npm install && npm run dev -- -p 3001
 ```
+
+## Contact Form Configuration
+
+The landing page contact form uses **Web3Forms** to send inquiries to `office@bluebear.at`.
+
+### Current Configuration
+- **Access Key:** `b9fdd631-7a92-422e-a45d-d9de16ea5a24`
+- **Recipient:** office@bluebear.at
+- **File:** `bluelogistic-landing/src/app/[locale]/contact/page.tsx`
+
+### Domain Setup (Required for Production)
+To enable the form on your production domain:
+
+1. Go to https://web3forms.com/
+2. Log in with the account that created the access key
+3. Navigate to **Settings** → **Allowed Domains**
+4. Add your production domain (e.g., `bluelogistic.com`, `www.bluelogistic.com`)
+5. Save changes
+
+**Note:** Without adding the domain to Web3Forms, form submissions from that domain will be rejected.
+
+### Changing the Recipient Email
+To change where form submissions are sent:
+
+1. Go to https://web3forms.com/
+2. Create a new access key with the new email address
+3. Update the access key in `bluelogistic-landing/src/app/[locale]/contact/page.tsx`:
+   ```typescript
+   formData.append('access_key', 'YOUR_NEW_ACCESS_KEY');
+   ```
 
 ## License
 

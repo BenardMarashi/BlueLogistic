@@ -64,7 +64,7 @@ export function HowItWorks() {
           </TabsList>
 
           {tabs.map((tab) => (
-            <TabsContent key={tab.value} value={tab.value} className="mt-0">
+            <TabsContent key={tab.value} value={tab.value} className="mt-0 w-full">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={tab.value}
@@ -72,7 +72,7 @@ export function HowItWorks() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="grid md:grid-cols-2 gap-8 items-center"
+                  className="grid md:grid-cols-2 gap-8 items-center w-full"
                 >
                   {/* Mockup Image */}
                   <div className="order-2 md:order-1">

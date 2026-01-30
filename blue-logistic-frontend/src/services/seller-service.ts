@@ -3,22 +3,22 @@ import { Seller, CreateSellerRequest, UpdateSellerStatusRequest, PaginatedRespon
 
 export const sellerService = {
   async getSellers(page = 0, size = 20): Promise<PaginatedResponse<Seller>> {
-    const { data } = await api.get<PaginatedResponse<Seller>>("/api/sellers", { params: { page, size } });
+    const { data } = await api.get<PaginatedResponse<Seller>>("/sellers", { params: { page, size } });
     return data;
   },
 
   async getSellerById(id: string): Promise<Seller> {
-    const { data } = await api.get<Seller>(`/api/sellers/${id}`);
+    const { data } = await api.get<Seller>(`/sellers/${id}`);
     return data;
   },
 
   async createSeller(request: CreateSellerRequest): Promise<Seller> {
-    const { data } = await api.post<Seller>("/api/sellers", request);
+    const { data } = await api.post<Seller>("/sellers", request);
     return data;
   },
 
   async updateSellerStatus(id: string, request: UpdateSellerStatusRequest): Promise<Seller> {
-    const { data } = await api.patch<Seller>(`/api/sellers/${id}/status`, request);
+    const { data } = await api.patch<Seller>(`/sellers/${id}/status`, request);
     return data;
   },
 };

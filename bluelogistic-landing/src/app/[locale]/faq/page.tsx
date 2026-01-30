@@ -26,22 +26,35 @@ export default function FAQPage() {
   const [activeCategory, setActiveCategory] = useState('general');
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Hero */}
-      <section className="bg-gradient-to-b from-[#0D2556] to-[#1a3a7a] text-white py-20">
-        <div className="container mx-auto px-4 text-center">
+    <div className="min-h-screen bg-white" suppressHydrationWarning>
+      {/* Hero - Industrial Style */}
+      <section className="relative bg-gradient-to-br from-[#0D2556] via-[#1a3a7a] to-[#0D2556] text-white py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0 grid-pattern opacity-20" />
+        <div className="absolute top-0 left-0 w-2 h-32 bg-[#D8420E]" />
+        <div className="absolute top-0 left-0 w-32 h-2 bg-[#D8420E]" />
+
+        <div className="container mx-auto px-4 text-center relative z-10">
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-4"
+            className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 text-white"
           >
             {t('heading')}
           </motion.h1>
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: '100px' }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="h-1.5 bg-[#D8420E] mx-auto"
+          />
         </div>
+
+        {/* Bottom angular cut */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-white" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 60%, 0 100%)' }} />
       </section>
 
-      {/* Category Cards */}
-      <section className="py-8 -mt-8">
+      {/* Category Cards - More spacing */}
+      <section className="py-16 md:py-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">
             {categories.map((category, index) => (
@@ -68,7 +81,7 @@ export default function FAQPage() {
       </section>
 
       {/* FAQ Accordions */}
-      <section className="py-12">
+      <section className="py-16 md:py-20 bg-[#F8FAFC]">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             {categories.map((category) => (

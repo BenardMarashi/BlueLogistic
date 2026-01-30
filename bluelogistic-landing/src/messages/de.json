@@ -21,7 +21,7 @@
     "ctaPrimary": "Kostenlos starten",
     "ctaSecondary": "Demo buchen",
     "trustBadge": "Vertraut von 450+ Unternehmen in Europa",
-    "priceCallout": "Versand nach Deutschland ab €4,99"
+    "priceCallout": "Versand nach Deutschland ab €9,98"
   },
   "partners": {
     "heading": "Vertraut von wachsenden Unternehmen"
@@ -31,7 +31,7 @@
     "card1Title": "Zeit sparen",
     "card1Description": "Keine manuelle Dateneingabe mehr. Verkäufer geben Pakete direkt ins System ein.",
     "card2Title": "Geld sparen",
-    "card2Description": "Günstige Tarife ab €2,90 nach Österreich und €4,99 nach Deutschland.",
+    "card2Description": "Günstige Tarife ab €5,80 nach Österreich und €9,98 nach Deutschland.",
     "card3Title": "Organisiert bleiben",
     "card3Description": "Verfolgen Sie jedes Paket von der Erstellung bis zur Zustellung. Wissen Sie immer, wo Ihre Sendungen sind."
   },
@@ -63,7 +63,7 @@
     "extendedEu": "Erweiterte EU",
     "balkans": "Balkan",
     "iceland": "Island",
-    "note": "Angezeigte Preise sind Einkaufspreise für 3kg-Pakete. Im Verkäufer-Dashboard sehen Sie Ihren Verkaufspreis (2x Aufschlag enthalten).",
+    "note": "Angezeigte Preise gelten für 3kg-Pakete. Schwerere Pakete können andere Tarife haben.",
     "weightSplitting": "Intelligente Gewichtsaufteilung: Pakete über 31,5kg werden automatisch für optimale Preise aufgeteilt",
     "viewAll": "Alle Preise ansehen",
     "pageTitle": "Transparente Preise für jede Sendung",
@@ -74,7 +74,7 @@
     "upTo": "Bis",
     "smartSplitting": "Intelligente Gewichtsaufteilung",
     "smartSplittingDesc": "Pakete über 31,5kg werden automatisch in mehrere Sendungen aufgeteilt, um die optimale Preiskombination zu finden. Unser System berechnet den günstigsten Weg, schwere Pakete zu versenden.",
-    "smartSplittingExample": "Ein 40kg-Paket nach Österreich könnte als 25kg + 15kg = €4,55 + €3,75 = €8,30 gesamt aufgeteilt werden"
+    "smartSplittingExample": "Ein 40kg-Paket nach Österreich könnte als 25kg + 15kg = €9,10 + €7,50 = €16,60 gesamt aufgeteilt werden"
   },
   "coverage": {
     "heading": "Versand in 29 europäische Länder",
@@ -109,7 +109,7 @@
     "heading": "Häufig gestellte Fragen",
     "viewAll": "Alle FAQs ansehen",
     "q1": "Wie funktioniert die Preisgestaltung?",
-    "a1": "Wir bieten transparente Preise pro Paket basierend auf Gewicht und Ziel. Es gibt keine monatlichen Gebühren oder Abos - Sie zahlen nur für das, was Sie versenden. Die Preise beginnen bei €2,90 für österreichische Inlandssendungen.",
+    "a1": "Wir bieten transparente Preise pro Paket basierend auf Gewicht und Ziel. Es gibt keine monatlichen Gebühren oder Abos - Sie zahlen nur für das, was Sie versenden. Die Preise beginnen bei €5,80 für österreichische Inlandssendungen.",
     "q2": "In welche Länder kann ich versenden?",
     "a2": "Wir unterstützen derzeit 29 europäische Länder, darunter Deutschland, Österreich, Frankreich, Italien, Spanien, Niederlande und mehr. Sehen Sie unsere vollständige Abdeckungskarte für Details.",
     "q3": "Wie erhalte ich Sendungsnummern?",
@@ -215,7 +215,7 @@
     "messageLabel": "Nachricht",
     "messagePlaceholder": "Wie können wir Ihnen helfen?",
     "submit": "Nachricht senden",
-    "infoEmail": "support@bluelogistic.com",
+    "infoEmail": "office@bluebear.at",
     "responseTime": "Wir antworten in der Regel innerhalb von 24 Stunden",
     "officeHours": "Montag - Freitag, 9:00 - 17:00 MEZ",
     "bookDemo": "Demo buchen"

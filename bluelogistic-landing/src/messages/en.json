@@ -21,7 +21,7 @@
     "ctaPrimary": "Get Started Free",
     "ctaSecondary": "Book Demo",
     "trustBadge": "Trusted by 450+ businesses across Europe",
-    "priceCallout": "Ship to Germany from €4.99"
+    "priceCallout": "Ship to Germany from €9.98"
   },
   "partners": {
     "heading": "Trusted by Growing Businesses"
@@ -31,7 +31,7 @@
     "card1Title": "Save Time",
     "card1Description": "No more manual data entry. Sellers input packages directly into the system.",
     "card2Title": "Save Money",
-    "card2Description": "Competitive rates starting from €2.90 to Austria and €4.99 to Germany.",
+    "card2Description": "Competitive rates starting from €5.80 to Austria and €9.98 to Germany.",
     "card3Title": "Stay Organized",
     "card3Description": "Track every package from creation to delivery. Always know where your shipments are."
   },
@@ -63,7 +63,7 @@
     "extendedEu": "Extended EU",
     "balkans": "Balkans",
     "iceland": "Iceland",
-    "note": "Prices shown are cost prices for 3kg packages. Seller dashboard shows your selling price (2x markup included).",
+    "note": "Prices shown are for 3kg packages. Heavier packages may have different rates.",
     "weightSplitting": "Smart weight splitting: Packages over 31.5kg are automatically split for optimal pricing",
     "viewAll": "View Full Pricing",
     "pageTitle": "Transparent Pricing for Every Shipment",
@@ -74,7 +74,7 @@
     "upTo": "Up to",
     "smartSplitting": "Smart Weight Splitting",
     "smartSplittingDesc": "Packages over 31.5kg are automatically split into multiple shipments to find the optimal price combination. Our system calculates the cheapest way to ship heavy packages.",
-    "smartSplittingExample": "A 40kg package to Austria might be split as 25kg + 15kg = €4.55 + €3.75 = €8.30 total"
+    "smartSplittingExample": "A 40kg package to Austria might be split as 25kg + 15kg = €9.10 + €7.50 = €16.60 total"
   },
   "coverage": {
     "heading": "Ship to 29 European Countries",
@@ -109,7 +109,7 @@
     "heading": "Frequently Asked Questions",
     "viewAll": "View All FAQs",
     "q1": "How does pricing work?",
-    "a1": "We offer transparent per-package pricing based on weight and destination. There are no monthly fees or subscriptions - you only pay for what you ship. Prices start from €2.90 for domestic Austrian shipments.",
+    "a1": "We offer transparent per-package pricing based on weight and destination. There are no monthly fees or subscriptions - you only pay for what you ship. Prices start from €5.80 for domestic Austrian shipments.",
     "q2": "What countries can I ship to?",
     "a2": "We currently support 29 European countries including Germany, Austria, France, Italy, Spain, Netherlands, and more. See our full coverage map for details.",
     "q3": "How do I get tracking numbers?",
@@ -215,7 +215,7 @@
     "messageLabel": "Message",
     "messagePlaceholder": "How can we help you?",
     "submit": "Send Message",
-    "infoEmail": "support@bluelogistic.com",
+    "infoEmail": "office@bluebear.at",
     "responseTime": "We typically respond within 24 hours",
     "officeHours": "Monday - Friday, 9:00 - 17:00 CET",
     "bookDemo": "Book a Demo"

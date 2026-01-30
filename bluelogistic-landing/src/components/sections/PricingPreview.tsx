@@ -8,12 +8,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Zap } from 'lucide-react';
 
 const destinations = [
-  { key: 'austria', flag: '🇦🇹', price: '2.90', label: 'austriaLabel' },
-  { key: 'germany', flag: '🇩🇪', price: '5.05' },
-  { key: 'centralEurope', flag: '🇨🇿🇭🇺🇸🇮🇸🇰', price: '6.00' },
-  { key: 'westernEurope', flag: '🇧🇪🇫🇷🇮🇹🇳🇱', price: '8.00' },
-  { key: 'spain', flag: '🇪🇸', price: '9.00' },
-  { key: 'extendedEu', flag: '🇧🇬🇫🇮🇬🇷🇸🇪', price: '10.00' },
+  { key: 'austria', flag: '🇦🇹', price: '5.80', label: 'austriaLabel' },
+  { key: 'germany', flag: '🇩🇪', price: '10.10' },
+  { key: 'centralEurope', flag: '🇨🇿🇭🇺🇸🇮🇸🇰', price: '12.00' },
+  { key: 'westernEurope', flag: '🇧🇪🇫🇷🇮🇹🇳🇱', price: '16.00' },
+  { key: 'spain', flag: '🇪🇸', price: '18.00' },
+  { key: 'extendedEu', flag: '🇧🇬🇫🇮🇬🇷🇸🇪', price: '20.00' },
 ];
 
 export function PricingPreview() {
